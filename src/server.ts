@@ -12,7 +12,7 @@ import corsOptions from './config/corsOptions';
 import rateLimiter from './config/rateLimiter';
 import cookieParser from 'cookie-parser';
 import { sequelize } from './config/database';  
-import './models/associations';
+import { defineAssociations } from './models/associations';
 import timeout from 'connect-timeout'; 
 
 dotenv.config();
@@ -20,7 +20,6 @@ validateEnv();
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
-
 
 const timeoutDuration = '1m'; 
 app.use(timeout(timeoutDuration));
@@ -40,6 +39,8 @@ app.use(cookieParser());
 app.use('/', router);
 
 app.use(handleErrors);
+
+defineAssociations(); 
 
 sequelize.sync({ force: false })  
     .then(() => {

@@ -107,6 +107,23 @@ class ProfilesController {
                 error: error.message,
             });
         }
+    }  
+
+    public static async getLoggedInProfile(req: AuthRequest, res: Response) {
+        try {
+            const userId = req.user; 
+            const profile = await Profile.findByPk(userId);
+            if (!profile) return res.status(404).json({ message: 'Profile not found' });
+            return res.status(200).json({
+                profile
+            });
+        } catch (error: any) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'Failed to retrieve profile',
+                error: error.message,
+            });
+        }
     }    
 }
 

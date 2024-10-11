@@ -227,4 +227,73 @@ router.put('/modify',
     ProfilesController.modifyProfile
 );
 
+/**
+ * @swagger
+ * /profiles/get/loggedin:
+ *   get:
+ *     summary: Get the profile of the logged-in user
+ *     tags: [Profiles]
+ *     security:
+ *       - bearerAuth: []  # JWT Authentication
+ *     responses:
+ *       200:
+ *         description: Profile retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 profile:
+ *                   type: object
+ *                   description: The profile of the logged-in user
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       description: Profile ID
+ *                     firstName:
+ *                       type: string
+ *                       description: User's first name
+ *                     lastName:
+ *                       type: string
+ *                       description: User's last name
+ *                     email:
+ *                       type: string
+ *                       description: User's email address
+ *                     createdAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: When the profile was created
+ *                     updatedAt:
+ *                       type: string
+ *                       format: date-time
+ *                       description: When the profile was last updated
+ *       404:
+ *         description: Profile not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Profile not found
+ *       500:
+ *         description: Failed to retrieve profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Failed to retrieve profile
+ *                 error:
+ *                   type: string
+ *                   description: Detailed error message
+ */
+router.get('/get/loggedin', 
+    authenticateToken,  
+    ProfilesController.getLoggedInProfile
+);
+
 export default router;

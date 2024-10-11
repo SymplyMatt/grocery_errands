@@ -1,9 +1,9 @@
 import { Router } from 'express';
 import swagger from './swagger'
-import users from './users'
+import profiles from './profiles'
 const router = Router();
 
-router.use('/users', users);
+router.use('/profiles', profiles);
 router.use('/', swagger);
 
 export default router;

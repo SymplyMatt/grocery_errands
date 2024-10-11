@@ -9,6 +9,7 @@ export class Profile extends Model {
   public profession?: string;
   public firstName!: string;
   public lastName!: string;
+  public email!: string;  
   public createdAt!: Date;
   public updatedAt!: Date;
 
@@ -45,6 +46,11 @@ Profile.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,  
+    },
   },
   {
     sequelize,
@@ -52,6 +58,12 @@ Profile.init(
     hooks: {
       beforeCreate: (profile) => {
         profile.id = Profile.generateUUID();
+        profile.email = profile.email.toLowerCase(); 
+      },
+      beforeUpdate: (profile) => {
+        if (profile.email) {
+          profile.email = profile.email.toLowerCase(); 
+        }
       },
     },
   }

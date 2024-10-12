@@ -54,7 +54,7 @@ const getAllContractsValidation = [
  * /contracts/getall:
  *   get:
  *     summary: Get all contracts
- *     tags: [Contracts]
+ *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:

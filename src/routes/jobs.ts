@@ -48,15 +48,6 @@ const router = express.Router();
  *       500:
  *         description: Failed to create job
  */
-
-
-
-
-
-
-
-
-
 router.post(
     '/create',
   authenticateToken,
@@ -153,7 +144,6 @@ JobsController.modifyJob
  *       500:
  *         description: Failed to mark job as completed
  */
-
 router.put(
     '/update/completed',
     authenticateToken,
@@ -237,7 +227,7 @@ router.get(
  * /jobs/get/all:
  *   get:
  *     summary: Get all jobs
- *     tags: [Jobs]
+ *     tags: [Admin]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -259,7 +249,7 @@ router.get(
  * /jobs/unpaid:
  *   get:
  *     summary: Get all unpaid jobs
- *     tags: [Jobs]
+ *     tags: [Jobs,Admin]
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -316,7 +306,7 @@ router.post(
  * /jobs/{job_id}:
  *   get:
  *     summary: Get details of a specific job
- *     tags: [Jobs]
+ *     tags: [Jobs,Admin]
  *     security:
  *       - bearerAuth: []
  *     parameters:

@@ -96,7 +96,7 @@ router.post('/create',
  * /profiles/{id}:
  *   get:
  *     summary: Get a profile by ID
- *     tags: [Profiles]
+ *     tags: [Profiles,Admin]
  *     parameters:
  *       - in: path
  *         name: id
@@ -122,7 +122,7 @@ router.get('/:id',
  * /profiles:
  *   get:
  *     summary: Get all profiles with pagination and filtering
- *     tags: [Profiles]
+ *     tags: [Admin]
  *     parameters:
  *       - in: query
  *         name: page

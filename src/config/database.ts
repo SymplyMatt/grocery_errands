@@ -9,7 +9,7 @@ export const sequelize = new Sequelize(
   process.env.DB_PASSWORD || 'your_postgres_password',
   {
     host: process.env.DB_HOST || '127.0.0.1',
-    port: process.env.NODE_ENV === 'development' ? 3306 : 5433,
+    port: 3306,
     dialect: 'mysql',
   }
 );

@@ -3,6 +3,7 @@ import { AuthRequest } from '../middleware/authenticateToken';
 import { Profile } from '../models/Profile';
 import { Contract } from '../models/Contract';
 import { Op } from 'sequelize';
+import { Job } from '../models/Job';
 
 class ContractsController {
     public static async createContract(req: AuthRequest, res: Response) {
@@ -51,6 +52,7 @@ class ContractsController {
         try {
             const contractId = req.params.id;
             const userId = req.user;
+            
             const contract = await Contract.findOne({
                 where: { id: contractId },
                 include: [
@@ -62,10 +64,16 @@ class ContractsController {
                         model: Profile,
                         as: 'contractor',
                     },
+                    {
+                        model: Job,
+                        as: 'jobs',
+                    },
                 ],
             });
             if (!contract) return res.status(404).json({ message: 'Contract not found' });
-            if (contract.clientId !== userId && contract.contractorId !== userId) return res.status(403).json({ message: 'Unauthorized to view this contract' });
+            if (contract.clientId !== userId && contract.contractorId !== userId) {
+                return res.status(403).json({ message: 'Unauthorized to view this contract' });
+            }
             return res.status(200).json({
                 contract
             });
@@ -76,8 +84,8 @@ class ContractsController {
                 error: error.message,
             });
         }
-    }    
-
+    }
+    
     public static async getUserContracts(req: AuthRequest, res: Response) {
         try {
             const userId = req.user;
@@ -104,6 +112,10 @@ class ContractsController {
                     {
                         model: Profile,
                         as: 'contractor', 
+                    },
+                    {
+                        model: Job,
+                        as: 'jobs',
                     },
                 ],
             });
@@ -133,7 +145,6 @@ class ContractsController {
             if (status) {
                 whereClause.status = status; 
             }
-
             const offset = (Number(page) - 1) * Number(limit);
             const contracts = await Contract.findAndCountAll({
                 where: whereClause,
@@ -147,6 +158,10 @@ class ContractsController {
                     {
                         model: Profile,
                         as: 'contractor', 
+                    },
+                    {
+                        model: Job,
+                        as: 'jobs', 
                     },
                 ],
             });

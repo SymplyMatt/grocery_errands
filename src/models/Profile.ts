@@ -1,6 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
+import bcrypt from 'bcrypt'; // To hash passwords
 
 export class Profile extends Model {
   public id!: string;
@@ -9,12 +10,17 @@ export class Profile extends Model {
   public profession?: string;
   public firstName!: string;
   public lastName!: string;
-  public email!: string;  
+  public email!: string;
+  public password!: string; 
   public createdAt!: Date;
   public updatedAt!: Date;
 
   public static generateUUID() {
     return uuidv4();
+  }
+
+  public async comparePassword(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
   }
 }
 
@@ -49,20 +55,28 @@ Profile.init(
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,  
+      unique: true,
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
   },
   {
     sequelize,
     tableName: 'profiles',
     hooks: {
-      beforeCreate: (profile) => {
+      beforeCreate: async (profile) => {
         profile.id = Profile.generateUUID();
-        profile.email = profile.email.toLowerCase(); 
+        profile.email = profile.email.toLowerCase();
+        profile.password = await bcrypt.hash(profile.password, 10); 
       },
-      beforeUpdate: (profile) => {
+      beforeUpdate: async (profile) => {
         if (profile.email) {
-          profile.email = profile.email.toLowerCase(); 
+          profile.email = profile.email.toLowerCase();
+        }
+        if (profile.password) {
+          profile.password = await bcrypt.hash(profile.password, 10); 
         }
       },
     },

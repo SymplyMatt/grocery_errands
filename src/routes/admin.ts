@@ -2,7 +2,7 @@ import express from 'express';
 import validate from '../middleware/validate';
 import authenticateToken from '../middleware/authenticateToken';
 import AdminController from '../controllers/admin';
-import { query } from 'express-validator';
+import { body, param, query } from 'express-validator';
 
 const router = express.Router();
 
@@ -112,6 +112,195 @@ router.get(
     ],
     validate,
     AdminController.bestClients
+);
+
+/**
+ * @swagger
+ * /admin/create:
+ *   post:
+ *     summary: Create a new admin
+ *     tags: [Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john.doe@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "password123"
+ *             required:
+ *               - firstName
+ *               - lastName
+ *               - email
+ *               - password
+ *     responses:
+ *       201:
+ *         description: Admin created successfully
+ *       400:
+ *         description: Email already in use or validation error
+ *       500:
+ *         description: Failed to create admin
+ */
+router.post(
+    '/create',
+    [
+        body('firstName').isString().notEmpty(),
+        body('lastName').isString().notEmpty(),
+        body('email').isEmail(),
+        body('password').isString().isLength({ min: 6 }),
+    ],
+    validate,
+    AdminController.createAdmin
+);
+
+/**
+ * @swagger
+ * /admin/all:
+ *   get:
+ *     summary: Get all admins
+ *     tags: [Admin]
+ *     responses:
+ *       200:
+ *         description: A list of admins
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                     format: uuid
+ *                     example: a5f0b365-4667-487e-bd2f-1dbdb49d93b4
+ *                   firstName:
+ *                     type: string
+ *                     example: John
+ *                   lastName:
+ *                     type: string
+ *                     example: Doe
+ *                   email:
+ *                     type: string
+ *                     format: email
+ *                     example: john.doe@example.com
+ *       500:
+ *         description: Failed to retrieve admins
+ */
+router.get(
+    '/all',
+    AdminController.getAllAdmins
+);
+
+/**
+ * @swagger
+ * /admin/{adminId}:
+ *   get:
+ *     summary: Get an admin by ID
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: adminId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *           example: a5f0b365-4667-487e-bd2f-1dbdb49d93b4
+ *     responses:
+ *       200:
+ *         description: Admin found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   format: uuid
+ *                   example: a5f0b365-4667-487e-bd2f-1dbdb49d93b4
+ *                 firstName:
+ *                   type: string
+ *                   example: John
+ *                 lastName:
+ *                   type: string
+ *                   example: Doe
+ *                 email:
+ *                   type: string
+ *                   format: email
+ *                   example: john.doe@example.com
+ *       404:
+ *         description: Admin not found
+ *       500:
+ *         description: Failed to retrieve admin
+ */
+router.get(
+    '/admin/:adminId',
+    [
+        param('adminId').isUUID(),
+    ],
+    validate,
+    AdminController.getAdminById
+);
+
+/**
+ * @swagger
+ * /admin/{adminId}:
+ *   put:
+ *     summary: Update an admin by ID
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: path
+ *         name: adminId
+ *         required: true
+ *         schema:
+ *           type: string
+ *           format: uuid
+ *           example: a5f0b365-4667-487e-bd2f-1dbdb49d93b4
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *             required:
+ *               - firstName
+ *               - lastName
+ *     responses:
+ *       200:
+ *         description: Admin updated successfully
+ *       404:
+ *         description: Admin not found
+ *       500:
+ *         description: Failed to update admin
+ */
+router.put(
+    '/admin/:adminId',
+    [
+        param('adminId').isUUID(),
+        body('firstName').optional().isString(),
+        body('lastName').optional().isString(),
+    ],
+    validate,
+    AdminController.updateAdmin
 );
 
 export default router;

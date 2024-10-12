@@ -52,17 +52,19 @@ class ContractsController {
         try {
             const contractId = req.params.id;
             const userId = req.user;
-            
+    
             const contract = await Contract.findOne({
                 where: { id: contractId },
                 include: [
                     {
                         model: Profile,
                         as: 'client',
+                        attributes: { exclude: ['password'] }, 
                     },
                     {
                         model: Profile,
                         as: 'contractor',
+                        attributes: { exclude: ['password'] }, 
                     },
                     {
                         model: Job,
@@ -75,7 +77,7 @@ class ContractsController {
                 return res.status(403).json({ message: 'Unauthorized to view this contract' });
             }
             return res.status(200).json({
-                contract
+                contract,
             });
         } catch (error: any) {
             console.error(error);
@@ -107,11 +109,13 @@ class ContractsController {
                 include: [
                     {
                         model: Profile,
-                        as: 'client', 
+                        as: 'client',
+                        attributes: { exclude: ['password'] }, 
                     },
                     {
                         model: Profile,
-                        as: 'contractor', 
+                        as: 'contractor',
+                        attributes: { exclude: ['password'] }, 
                     },
                     {
                         model: Job,
@@ -133,17 +137,17 @@ class ContractsController {
             });
         }
     }
-
+    
     public static async getAllContracts(req: AuthRequest, res: Response) {
         try {
             const { page = 1, limit = 10, status } = req.query;
-
+    
             const whereClause: any = {
                 status: { [Op.ne]: 'terminated' },
             };
-
+    
             if (status) {
-                whereClause.status = status; 
+                whereClause.status = status;
             }
             const offset = (Number(page) - 1) * Number(limit);
             const contracts = await Contract.findAndCountAll({
@@ -153,19 +157,21 @@ class ContractsController {
                 include: [
                     {
                         model: Profile,
-                        as: 'client', 
+                        as: 'client',
+                        attributes: { exclude: ['password'] },
                     },
                     {
                         model: Profile,
-                        as: 'contractor', 
+                        as: 'contractor',
+                        attributes: { exclude: ['password'] },
                     },
                     {
                         model: Job,
-                        as: 'jobs', 
+                        as: 'jobs',
                     },
                 ],
             });
-
+    
             return res.status(200).json({
                 contracts: contracts.rows,
                 total: contracts.count,
@@ -180,6 +186,7 @@ class ContractsController {
             });
         }
     }
+    
 }
 
 export default ContractsController;

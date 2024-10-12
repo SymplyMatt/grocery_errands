@@ -110,8 +110,14 @@ class JobsController {
                     model: Contract,
                     as: 'contract',
                     include: [
-                        { model: Profile, as: 'client' },
-                        { model: Profile, as: 'contractor' }
+                        { model: Profile, 
+                            as: 'client' ,
+                            attributes: { exclude: ['password'] }, 
+                        },
+                        { model: Profile, 
+                            as: 'contractor', 
+                            attributes: { exclude: ['password'] }, 
+                        }
                     ]
                 }]
             });
@@ -136,8 +142,14 @@ class JobsController {
                 model: Contract,
                 as: 'contract',
                 include: [
-                { model: Profile, as: 'client' },
-                { model: Profile, as: 'contractor' }
+                { model: Profile, 
+                    as: 'client',
+                    attributes: { exclude: ['password'] }, 
+                },
+                { model: Profile, 
+                    as: 'contractor', 
+                    attributes: { exclude: ['password'] }, 
+                }
                 ]
             }]
         });
@@ -174,8 +186,14 @@ class JobsController {
                 status: 'in_progress'
                 },
                 include: [
-                { model: Profile, as: 'client' },
-                { model: Profile, as: 'contractor' }
+                    { model: Profile, 
+                        as: 'client',
+                        attributes: { exclude: ['password'] }, 
+                    },
+                    { model: Profile, 
+                        as: 'contractor', 
+                        attributes: { exclude: ['password'] }, 
+                    }
                 ]
             }]
         });
@@ -200,8 +218,14 @@ class JobsController {
                 model: Contract,
                 as: 'contract',
                 include: [
-                { model: Profile, as: 'client' },
-                { model: Profile, as: 'contractor' }
+                    { model: Profile, 
+                        as: 'client',
+                        attributes: { exclude: ['password'] }, 
+                    },
+                    { model: Profile, 
+                        as: 'contractor', 
+                        attributes: { exclude: ['password'] }, 
+                    }
                 ]
             }] });
             if (!job) return res.status(404).json({ message: 'Job not found' });
@@ -239,8 +263,14 @@ class JobsController {
                 model: Contract,
                 as: 'contract',
                 include: [
-                { model: Profile, as: 'client' },
-                { model: Profile, as: 'contractor' }
+                    { model: Profile, 
+                        as: 'client',
+                        attributes: { exclude: ['password'] }, 
+                    },
+                    { model: Profile, 
+                        as: 'contractor', 
+                        attributes: { exclude: ['password'] }, 
+                    }
                 ]
             }] });
             if (!job) return res.status(404).json({ message: 'Job not found' });

@@ -167,16 +167,15 @@ class AdminController {
         }
     }
 
-    public static async updateAdmin(req: Request, res: Response) {
+    public static async updateAdmin(req: AuthRequest, res: Response) {
         try {
             const { adminId } = req.params;
             const { firstName, lastName, email } = req.body;
-
             const admin = await Admin.findByPk(adminId);
-
             if (!admin) {
                 return res.status(404).json({ message: 'Admin not found' });
             }
+            if(admin.id !== req.user) return res.status(401).json({ message: 'Unauthorized to modify' });
             admin.firstName = firstName || admin.firstName;
             admin.lastName = lastName || admin.lastName;
 

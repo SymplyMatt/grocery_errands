@@ -3,6 +3,7 @@ import validate from '../middleware/validate';
 import { body, query } from 'express-validator';
 import authenticateToken from '../middleware/authenticateToken';
 import ProfilesController from '../controllers/profiles';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 
@@ -178,6 +179,7 @@ router.get('/:id',
  */
 router.get('/', 
     authenticateToken,
+    authenticateAdmin,
     ProfilesController.getProfiles
 );
 

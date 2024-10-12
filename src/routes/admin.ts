@@ -3,6 +3,7 @@ import validate from '../middleware/validate';
 import authenticateToken from '../middleware/authenticateToken';
 import AdminController from '../controllers/admin';
 import { body, param, query } from 'express-validator';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 
@@ -42,6 +43,7 @@ const router = express.Router();
 router.get(
     '/best-profession',
     authenticateToken,
+    authenticateAdmin,
     [
         query('start')
             .isISO8601()
@@ -98,6 +100,7 @@ router.get(
 router.get(
     '/best-clients',
     authenticateToken,
+    authenticateAdmin,
     [
         query('start')
             .isISO8601()
@@ -201,6 +204,8 @@ router.post(
  */
 router.get(
     '/all',
+    authenticateToken,
+    authenticateAdmin,
     AdminController.getAllAdmins
 );
 
@@ -247,6 +252,8 @@ router.get(
  */
 router.get(
     '/admin/:adminId',
+    authenticateToken,
+    authenticateAdmin,
     [
         param('adminId').isUUID(),
     ],
@@ -294,6 +301,8 @@ router.get(
  */
 router.put(
     '/admin/:adminId',
+    authenticateToken,
+    authenticateAdmin,
     [
         param('adminId').isUUID(),
         body('firstName').optional().isString(),

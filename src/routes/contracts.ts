@@ -4,6 +4,7 @@ import authenticateToken from '../middleware/authenticateToken';
 import ContractsController from '../controllers/contracts';
 import authenticateclient from '../middleware/authenticateclient';
 import { body, query, param } from 'express-validator';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 
@@ -84,6 +85,7 @@ const getAllContractsValidation = [
  */
 router.get('/getall', 
     authenticateToken, 
+    authenticateAdmin,
     getAllContractsValidation, 
     validate, 
     ContractsController.getAllContracts

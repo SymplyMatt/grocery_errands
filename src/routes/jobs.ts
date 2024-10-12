@@ -5,6 +5,7 @@ import authenticateToken from '../middleware/authenticateToken';
 import JobsController from '../controllers/jobs';
 import authenticateclient from '../middleware/authenticateclient';
 import authenticatecontractor from '../middleware/authenticatecontractor';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 
@@ -239,6 +240,7 @@ router.get(
 router.get(
     '/get/all',
     authenticateToken,
+    authenticateAdmin,
   validate,
   JobsController.getAllJobs
 );

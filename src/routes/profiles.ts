@@ -305,7 +305,7 @@ router.get('/get/loggedin',
  *   post:
  *     summary: Login user
  *     description: Authenticate user with email and password. If the user type is 'admin', checks against the Admin model; otherwise, checks against the Profile model.
- *     tags: [Profile,Admin]
+ *     tags: [Profiles,Admin]
  *     requestBody:
  *       required: true
  *       content:

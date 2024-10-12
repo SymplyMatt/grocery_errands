@@ -1,7 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
-import bcrypt from 'bcrypt'; // To hash passwords
+import bcrypt from 'bcrypt'; 
 
 export class Profile extends Model {
   public id!: string;

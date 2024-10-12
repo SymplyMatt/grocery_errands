@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/authenticateToken';
 import { Profile } from '../models/Profile';
 import generateToken from '../config/generateToken';
+import { Admin } from '../models/Admin';
 
 class ProfilesController {
     public static async createProfile(req: AuthRequest, res: Response) {
@@ -38,7 +39,9 @@ class ProfilesController {
     public static async getProfile(req: Request, res: Response) {
         try {
             const profileId = req.params.id;
-            const profile = await Profile.findByPk(profileId);
+            const profile = await Profile.findByPk(profileId, {
+                attributes: { exclude: ['password'] }
+            });
             if (!profile) {
                 return res.status(404).json({ message: 'Profile not found' });
             }
@@ -63,7 +66,12 @@ class ProfilesController {
                     where[filter] = req.query[filter];
                 }
             });
-            const { count, rows } = await Profile.findAndCountAll({where,limit: Number(limit),offset});
+            const { count, rows } = await Profile.findAndCountAll({
+                where,
+                limit: Number(limit),
+                offset,
+                attributes: { exclude: ['password'] }, 
+            });            
             return res.status(200).json({
                 data: {
                     totalProfiles: count,
@@ -85,7 +93,9 @@ class ProfilesController {
         try {
             const profileId = req.body.id;
             const userId = req.user; 
-            const profile = await Profile.findByPk(profileId);
+            const profile = await Profile.findByPk(profileId, {
+                attributes: { exclude: ['password'] } 
+            });
             if (!profile) return res.status(404).json({ message: 'Profile not found' });
             if (profile.id !== userId) return res.status(403).json({ message: 'Unauthorized to modify this profile' });
             const { type, profession, email, ...updateData } = req.body;
@@ -112,10 +122,23 @@ class ProfilesController {
     public static async getLoggedInProfile(req: AuthRequest, res: Response) {
         try {
             const userId = req.user; 
-            const profile = await Profile.findByPk(userId);
-            if (!profile) return res.status(404).json({ message: 'Profile not found' });
+            const userRole = req.role;
+            let profile;
+            if (userRole === 'admin') {
+                profile = await Admin.findOne({
+                    where: { id: userId },
+                    attributes: { exclude: ['password'] }, 
+                });
+            } else {
+                profile = await Profile.findByPk(userId, {
+                    attributes: { exclude: ['password'] }, 
+                });
+            }
+            if (!profile) {
+                return res.status(404).json({ message: 'Profile not found' });
+            }
             return res.status(200).json({
-                profile
+                profile,
             });
         } catch (error: any) {
             console.error(error);
@@ -124,7 +147,7 @@ class ProfilesController {
                 error: error.message,
             });
         }
-    }    
+    }        
 }
 
 export default ProfilesController;

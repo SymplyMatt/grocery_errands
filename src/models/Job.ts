@@ -11,6 +11,8 @@ export class Job extends Model {
   public completed!: boolean;
   public approvalStatus!: 'pending' | 'approved' | 'rejected';
   public contractId!: string;
+  public clientId!: string;
+  public contractorId!: string;
   public createdAt!: Date;
   public updatedAt!: Date;
 
@@ -53,6 +55,14 @@ Job.init(
       allowNull: false,
     },
     contractId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    clientId: {
+      type: DataTypes.UUID,
+      allowNull: false,
+    },
+    contractorId: {
       type: DataTypes.UUID,
       allowNull: false,
     },

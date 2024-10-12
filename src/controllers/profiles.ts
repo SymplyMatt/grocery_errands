@@ -15,7 +15,7 @@ class ProfilesController {
             } else {
                 profession = null;
             }
-            const newProfile = await Profile.create({type,profession,firstName,lastName,email,balance: 0,createdAt: new Date(),updatedAt: new Date()});
+            const newProfile = await Profile.create({type,profession,firstName,lastName,email,balance: 100,createdAt: new Date(),updatedAt: new Date()});
             const token = generateToken({ user: newProfile.id, role: type });
             res.cookie('token', token, {
                 httpOnly: true,

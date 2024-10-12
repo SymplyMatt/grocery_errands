@@ -3,7 +3,8 @@ import { AuthRequest } from '../middleware/authenticateToken';
 import { Profile } from '../models/Profile';
 import generateToken from '../config/generateToken';
 import { Admin } from '../models/Admin';
-
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 class ProfilesController {
     public static async createProfile(req: AuthRequest, res: Response) {
         try {
@@ -147,7 +148,48 @@ class ProfilesController {
                 error: error.message,
             });
         }
-    }        
+    }     
+    
+    public static async login(req: Request, res: Response) {
+        try {
+            const { email, password, type } = req.body;
+            let user : any;
+            if (type === 'admin') {
+                user = await Admin.findOne({ where: { email } });
+            } else {
+                user = await Profile.findOne({ where: { email } });
+            }
+            if (!user) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+            const isPasswordValid = await bcrypt.compare(password, user.password);
+            if (!isPasswordValid) {
+                return res.status(401).json({ message: 'Invalid email or password' });
+            }
+            const token = generateToken({ user: user.id, role: type == 'admin' ? 'admin' : user.type });
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000 // 1 day
+            });
+            return res.status(200).json({
+                message: 'Login successful',
+                token,
+                user: { 
+                    id: user.id, 
+                    email: user.email, 
+                    firstName: user.firstName, 
+                    lastName: user.lastName 
+                },
+            });
+        } catch (error: any) {
+            console.error(error);
+            return res.status(500).json({
+                message: 'Login failed',
+                error: error.message,
+            });
+        }
+    }
 }
 
 export default ProfilesController;

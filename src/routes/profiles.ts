@@ -4,6 +4,7 @@ import { body, query } from 'express-validator';
 import authenticateToken from '../middleware/authenticateToken';
 import ProfilesController from '../controllers/profiles';
 import authenticateAdmin from '../middleware/authenticateAdmin';
+import AdminController from '../controllers/admin';
 
 const router = express.Router();
 
@@ -296,6 +297,110 @@ router.put('/modify',
 router.get('/get/loggedin', 
     authenticateToken,  
     ProfilesController.getLoggedInProfile
+);
+
+/**
+ * @swagger
+ * /profiles/login:
+ *   post:
+ *     summary: Login user
+ *     description: Authenticate user with email and password. If the user type is 'admin', checks against the Admin model; otherwise, checks against the Profile model.
+ *     tags: [Profile,Admin]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               password:
+ *                 type: string
+ *                 example: yourpassword
+ *               type:
+ *                 type: string
+ *                 enum: [user,admin]
+ *                 example: user
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 token:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   type: object
+ *                   properties:
+ *                     id:
+ *                       type: string
+ *                       example: 1
+ *                     email:
+ *                       type: string
+ *                       example: johndoe@example.com
+ *                     firstName:
+ *                       type: string
+ *                       example: John
+ *                     lastName:
+ *                       type: string
+ *                       example: Doe
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       msg:
+ *                         type: string
+ *                       param:
+ *                         type: string
+ *       401:
+ *         description: Invalid email or password
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid email or password
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login failed
+ *                 error:
+ *                   type: string
+ *                   example: Some error message
+ */
+
+router.post('/login', 
+    [
+        body('email').isEmail().withMessage('Invalid email format'),
+        body('password').isString().withMessage('Password must be a string'),
+        body('type').isIn(['user','admin']).withMessage('Type must be user or admin'),
+    ],
+    ProfilesController.login
 );
 
 export default router;

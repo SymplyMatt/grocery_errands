@@ -6,7 +6,7 @@ dotenv.config();
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Woven Test',
+    title: 'RHMS Backend',
     version: '1.0.0',
     description: 'API documentation',
   },
@@ -35,7 +35,7 @@ const swaggerDefinition = {
 
 const options = {
   swaggerDefinition,
-  apis: ['./src/routes/*.ts', './src/models/*.ts'],
+  apis: ['./src/routes/*.ts'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);

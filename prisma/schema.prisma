@@ -1,0 +1,364 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  inSeason    Boolean  @default(true)
+  description String   // Raw HTML content
+  image       String   // Image URL
+  deletedAt   DateTime? // Soft delete
+  createdBy   String
+  updatedBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  productOptions    ProductOption[]
+  productCategories ProductCategory[]
+  locationProducts  LocationProduct[]
+  carts             Cart[]
+  orderProducts     OrderProduct[]
+  productContents   ProductContent[] // For versioned content
+
+  @@map("products")
+}
+
+model ProductOption {
+  id       String  @id @default(cuid())
+  productId String
+  name     String
+  price    Decimal @db.Decimal(10, 2)
+  image    String  // Image URL
+  stock    Int
+  deletedAt DateTime? // Soft delete
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  product       Product        @relation(fields: [productId], references: [id], onDelete: Cascade)
+  carts         Cart[]
+  orderProducts OrderProduct[]
+
+  @@map("product_options")
+}
+
+model Category {
+  id    String @id @default(cuid())
+  name  String
+  image String // Image URL
+  deletedAt DateTime? // Soft delete
+  createdBy String
+  updatedBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  productCategories ProductCategory[]
+  locationCategories LocationCategory[]
+
+  @@map("categories")
+}
+
+model ProductCategory {
+  id         String @id @default(cuid())
+  productId  String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, categoryId])
+  @@map("product_categories")
+}
+
+model Location {
+  id   String @id @default(cuid())
+  name String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  locationProducts   LocationProduct[]
+  locationCategories LocationCategory[]
+  users              User[]
+
+  @@map("locations")
+}
+
+model LocationProduct {
+  id         String @id @default(cuid())
+  locationId String
+  productId  String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  product  Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([locationId, productId])
+  @@map("location_products")
+}
+
+model LocationCategory {
+  id         String @id @default(cuid())
+  locationId String
+  categoryId String
+  createdAt  DateTime @default(now())
+
+  // Relations
+  location Location @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([locationId, categoryId])
+  @@map("location_categories")
+}
+
+model User {
+  id         String  @id @default(cuid())
+  firstname  String
+  lastname   String
+  email      String  @unique
+  phone      String  @unique
+  whatsapp   String?
+  locationId String
+  username   String  @unique
+  deletedAt  DateTime? // Soft delete
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  location          Location           @relation(fields: [locationId], references: [id])
+  userAuth          UserAuth?
+  carts             Cart[]
+  verificationCodes VerificationCode[]
+  userTopUps        UserTopUp[]
+  orders            Order[]
+  orderProducts     OrderProduct[]
+  notifications     Notification[]
+  deliveryAddresses DeliveryAddress[]
+
+  @@index([email])
+  @@index([phone])
+  @@map("users")
+}
+
+// New model for versioned product content
+model ProductContent {
+  id          String   @id @default(cuid())
+  productId   String
+  content     String   // Raw HTML content
+  createdBy   String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("product_contents")
+}
+
+model Admin {
+  id        String @id @default(cuid())
+  firstname String
+  lastname  String
+  email     String @unique
+  phone     String @unique
+  deletedAt DateTime? // Soft delete
+  createdBy String?   // Can be null for first admin
+  updatedBy String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  adminAuth AdminAuth?
+
+  @@index([email])
+  @@index([phone])
+  @@map("admins")
+}
+
+model UserAuth {
+  id       String @id @default(cuid())
+  userId   String @unique
+  password String // Hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Validation constraints
+  @@map("user_auth")
+}
+
+model AdminAuth {
+  id       String @id @default(cuid())
+  adminId  String @unique
+  password String // Hashed password
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  admin Admin @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("admin_auth")
+}
+
+model Cart {
+  id              String @id @default(cuid())
+  userId          String
+  productId       String
+  productOptionId String
+  quantity        Int    @default(1)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productOption ProductOption @relation(fields: [productOptionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productOptionId])
+  @@map("carts")
+}
+
+model VerificationCode {
+  id        String   @id @default(cuid())
+  userId    String
+  code      String   // Hashed code
+  expiresIn DateTime
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("verification_codes")
+}
+
+enum TopUpStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+model UserTopUp {
+  id            String      @id @default(cuid())
+  referenceNumber String    @unique @default(cuid()) // Reference number for tracking
+  userId        String
+  amount        Decimal     @db.Decimal(10, 2)
+  status        TopUpStatus @default(PENDING)
+  meta          Json        // Object for additional metadata
+  deletedAt     DateTime?   // Soft delete
+  createdBy     String
+  updatedBy     String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_top_ups")
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  TOPUP
+  PAYSTACK
+}
+
+model Order {
+  id            String        @id @default(cuid())
+  orderNumber   String        @unique @default(cuid()) // Reference number for tracking
+  userId        String
+  status        OrderStatus   @default(PENDING) // Changed to enum
+  total         Decimal       @db.Decimal(10, 2)
+  delivery      Decimal       @db.Decimal(10, 2)
+  paymentMethod PaymentMethod
+  meta          Json          // Object for additional metadata
+  deletedAt     DateTime?     // Soft delete
+  createdBy     String
+  updatedBy     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  // Relations
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderProducts OrderProduct[]
+
+  @@map("orders")
+}
+
+model OrderProduct {
+  id              String  @id @default(cuid())
+  orderId         String
+  userId          String
+  productId       String
+  productOptionId String
+  quantity        Int
+  price           Decimal @db.Decimal(10, 2)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product       Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productOption ProductOption @relation(fields: [productOptionId], references: [id], onDelete: Cascade)
+
+  @@map("order_products")
+}
+
+model Notification {
+  id        String  @id @default(cuid())
+  userId    String
+  message   String
+  read      Boolean @default(false)
+  action    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model DeliveryAddress {
+  id        String @id @default(cuid())
+  userId    String
+  firstname String
+  lastname  String
+  phone     String
+  state     String
+  lga       String
+  address   String
+  email     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("delivery_addresses")
+}

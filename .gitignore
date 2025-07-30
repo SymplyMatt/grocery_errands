@@ -3,3 +3,5 @@
 dist
 node_modules
 rethinkdb_data
+
+/src/generated/prisma

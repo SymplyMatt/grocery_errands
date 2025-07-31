@@ -1,7 +1,5 @@
-// types/index.ts
 import { Document, Types } from 'mongoose';
 
-// Base interfaces for common fields
 export interface ITimestamps {
   createdAt: Date;
   updatedAt: Date;
@@ -16,12 +14,10 @@ export interface IAuditFields {
   updatedBy: string;
 }
 
-// Core entity interfaces
 export interface ILocation extends Document, ITimestamps {
   _id: Types.ObjectId;
   name: string;
-  
-  // Virtual associations
+
   locationProducts?: ILocationProduct[];
   locationCategories?: ILocationCategory[];
   users?: IUser[];
@@ -31,8 +27,7 @@ export interface ICategory extends Document, ITimestamps, ISoftDelete, IAuditFie
   _id: Types.ObjectId;
   name: string;
   image: string;
-  
-  // Virtual associations
+
   productCategories?: IProductCategory[];
   locationCategories?: ILocationCategory[];
 }
@@ -44,7 +39,6 @@ export interface IProduct extends Document, ITimestamps, ISoftDelete, IAuditFiel
   description: string;
   image: string;
   
-  // Virtual associations
   productOptions?: IProductOption[];
   productCategories?: IProductCategory[];
   locationProducts?: ILocationProduct[];
@@ -61,7 +55,6 @@ export interface IProductOption extends Document, ITimestamps, ISoftDelete, IAud
   image: string;
   stock: number;
   
-  // Virtual associations
   product?: IProduct;
   carts?: ICart[];
   orderProducts?: IOrderProduct[];
@@ -77,7 +70,6 @@ export interface IUser extends Document, ITimestamps, ISoftDelete {
   locationId: Types.ObjectId;
   username: string;
   
-  // Virtual associations
   location?: ILocation;
   userAuth?: IUserAuth;
   carts?: ICart[];
@@ -98,18 +90,15 @@ export interface IAdmin extends Document, ITimestamps, ISoftDelete {
   createdBy?: string | null;
   updatedBy?: string | null;
   
-  // Virtual associations
   adminAuth?: IAdminAuth;
 }
 
-// Junction/Association interfaces
 export interface IProductCategory extends Document {
   _id: Types.ObjectId;
   productId: Types.ObjectId;
   categoryId: Types.ObjectId;
   createdAt: Date;
   
-  // Virtual associations
   product?: IProduct;
   category?: ICategory;
 }
@@ -120,7 +109,6 @@ export interface ILocationProduct extends Document {
   productId: Types.ObjectId;
   createdAt: Date;
   
-  // Virtual associations
   location?: ILocation;
   product?: IProduct;
 }
@@ -131,18 +119,15 @@ export interface ILocationCategory extends Document {
   categoryId: Types.ObjectId;
   createdAt: Date;
   
-  // Virtual associations
   location?: ILocation;
   category?: ICategory;
 }
 
-// Auth interfaces
 export interface IUserAuth extends Document, ITimestamps {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   password: string;
   
-  // Virtual associations
   user?: IUser;
 }
 
@@ -150,8 +135,7 @@ export interface IAdminAuth extends Document, ITimestamps {
   _id: Types.ObjectId;
   adminId: Types.ObjectId;
   password: string;
-  
-  // Virtual associations
+
   admin?: IAdmin;
 }
 
@@ -162,22 +146,19 @@ export interface ICart extends Document, ITimestamps {
   productId: Types.ObjectId;
   productOptionId: Types.ObjectId;
   quantity: number;
-  
-  // Virtual associations
+
   user?: IUser;
   product?: IProduct;
   productOption?: IProductOption;
 }
 
-// Content and verification interfaces
 export interface IProductContent extends Document {
   _id: Types.ObjectId;
   productId: Types.ObjectId;
   content: string;
   createdBy: string;
   createdAt: Date;
-  
-  // Virtual associations
+
   product?: IProduct;
 }
 
@@ -187,12 +168,10 @@ export interface IVerificationCode extends Document, ITimestamps {
   code: string;
   expiresIn: Date;
   isUsed: boolean;
-  
-  // Virtual associations
+
   user?: IUser;
 }
 
-// Financial interfaces
 export type TopUpStatus = 'PENDING' | 'SUCCESS' | 'FAILED';
 
 export interface IUserTopUp extends Document, ITimestamps, ISoftDelete, IAuditFields {
@@ -202,12 +181,10 @@ export interface IUserTopUp extends Document, ITimestamps, ISoftDelete, IAuditFi
   amount: number;
   status: TopUpStatus;
   meta: Record<string, any>;
-  
-  // Virtual associations
+
   user?: IUser;
 }
 
-// Order interfaces
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 export type PaymentMethod = 'TOPUP' | 'PAYSTACK';
 
@@ -220,8 +197,7 @@ export interface IOrder extends Document, ITimestamps, ISoftDelete, IAuditFields
   delivery: number;
   paymentMethod: PaymentMethod;
   meta: Record<string, any>;
-  
-  // Virtual associations
+
   user?: IUser;
   orderProducts?: IOrderProduct[];
 }
@@ -234,8 +210,7 @@ export interface IOrderProduct extends Document, ITimestamps {
   productOptionId: Types.ObjectId;
   quantity: number;
   price: number;
-  
-  // Virtual associations
+
   order?: IOrder;
   user?: IUser;
   product?: IProduct;
@@ -249,12 +224,10 @@ export interface INotification extends Document, ITimestamps {
   message: string;
   read: boolean;
   action: string;
-  
-  // Virtual associations
+
   user?: IUser;
 }
 
-// Delivery address interface
 export interface IDeliveryAddress extends Document, ITimestamps {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
@@ -265,12 +238,9 @@ export interface IDeliveryAddress extends Document, ITimestamps {
   lga: string;
   address: string;
   email: string;
-  
-  // Virtual associations
+
   user?: IUser;
 }
-
-// Population types for better type safety
 export interface IProductWithOptions extends IProduct {
   productOptions: IProductOption[];
 }

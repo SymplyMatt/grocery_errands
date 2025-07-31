@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IDeliveryAddress } from '../index';
+import { IDeliveryAddress } from '../interfaces';
 
 const deliveryAddressSchema = new Schema<IDeliveryAddress>({
   userId: {

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ICategory } from '../index';
+import { ICategory } from '../interfaces';
 
 const categorySchema = new Schema<ICategory>({
   name: {

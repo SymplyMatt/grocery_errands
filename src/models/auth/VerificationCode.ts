@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IVerificationCode } from '../index';
+import { IVerificationCode } from '../interfaces';
 
 const verificationCodeSchema = new Schema<IVerificationCode>({
   userId: {

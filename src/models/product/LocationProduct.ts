@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ILocationProduct } from '../index';
+import { ILocationProduct } from '../interfaces';
 
 const locationProductSchema = new Schema<ILocationProduct>({
   locationId: {

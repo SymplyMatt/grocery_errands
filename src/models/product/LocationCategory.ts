@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { ILocationCategory } from '../index';
+import { ILocationCategory } from '../interfaces';
 
 const locationCategorySchema = new Schema<ILocationCategory>({
   locationId: {

@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import { IAdminAuth } from '../index';
+import { IAdminAuth } from '../interfaces';
 
 const adminAuthSchema = new Schema<IAdminAuth>({
   adminId: {

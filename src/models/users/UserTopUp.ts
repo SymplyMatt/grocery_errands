@@ -1,5 +1,5 @@
 import mongoose, { Schema, model } from 'mongoose';
-import { IUserTopUp, TopUpStatus } from '../index';
+import { IUserTopUp, TopUpStatus } from '../interfaces';
 
 const topUpStatusEnum: TopUpStatus[] = ['PENDING', 'SUCCESS', 'FAILED'];
 

@@ -7,8 +7,9 @@ import validateEnv from './config/validateEnv';
 import rateLimiter from './config/rateLimiter';
 import timeout from 'connect-timeout'; 
 import cookieParser from 'cookie-parser';
-import prisma from './config/prisma';
 import router from './routes/router';
+import connectDB from './config/mongodb';
+
 dotenv.config();
 validateEnv();
 
@@ -30,8 +31,5 @@ app.use(cookieParser());
 
 app.use('/', router);
 app.use(handleErrors);
-// (async()=>{
-//     await prisma.$connect()
-//     console.log("Database connected successfully");
-// })();
+connectDB();
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -248,7 +248,20 @@ export interface IProductWithOptions extends IProduct {
 export interface IProductWithCategories extends IProduct {
   productCategories: (IProductCategory & { category: ICategory })[];
 }
-
+export interface IProductWithOptionsAndCategories extends IProduct {
+  productOptions: IProductOption[];
+  productCategories: (IProductCategory & { category: ICategory })[];
+}
+export interface IProductWithDetails extends IProduct {
+  productOptions: IProductOption[];
+  productCategories: (IProductCategory & { category: ICategory })[];
+  locationProducts?: (ILocationProduct & { location: ILocation })[];
+}
+export interface IProductWithDetails extends IProduct {
+  productOptions: IProductOption[];
+  productCategories: (IProductCategory & { category: ICategory })[];
+  locationProducts?: (ILocationProduct & { location: ILocation })[];
+}
 export interface IUserWithLocation extends IUser {
   location: ILocation;
 }

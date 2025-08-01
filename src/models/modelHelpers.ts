@@ -4,44 +4,6 @@ import { Product, ProductOption, ProductCategory, User, Location, Order, OrderPr
 
 export class ModelHelpers {
 
-    static async findProductsWithAllDetails(filter: FilterQuery<IProduct> = {}, options: { page?: number; limit?: number; sort?: Record<string, 1 | -1> } = {}): Promise<{ products: IProduct[]; pagination: { currentPage: number; totalPages: number; totalProducts: number; hasNext: boolean; hasPrev: boolean;};
-    }> {
-        const { page = 1, limit = 10, sort = { createdAt: -1 }} = options;
-          const skip = (page - 1) * limit;
-          const totalProducts = await Product.countDocuments(filter);
-          const totalPages = Math.ceil(totalProducts / limit);
-          let query = Product.find(filter).populate('productOptions').populate('productContents').populate({ path: 'productCategories', populate: { path: 'category' } }).populate({ path: 'locationProducts', populate: { path: 'location' }}).sort(sort).skip(skip).limit(limit);
-          const products = await query.exec();
-          return { products, pagination: { currentPage: page, totalPages, totalProducts, hasNext: page < totalPages, hasPrev: page > 1 }};
-    }
-
-    static async findProductById(id: string | Types.ObjectId): Promise<IProduct | null> {
-        let query = Product.findById(id)
-            .populate('productOptions')
-            .populate({
-                path: 'productCategories',
-                populate: {
-                    path: 'category'
-                }
-            })
-            .populate({
-                path: 'locationProducts',
-                populate: {
-                    path: 'location'
-                }
-            })
-            .populate('productContents');
-        return query.exec();
-    }
-
-    static async findProductsWithOptions( filter: FilterQuery<IProduct> = {}): Promise<IProductWithOptions[]> {
-        return Product.find(filter).populate('productOptions').exec() as Promise<IProductWithOptions[]>;
-    }
-
-    static async findProductsWithCategories(filter: FilterQuery<IProduct> = {}): Promise<IProductWithCategories[]> {
-        return Product.find(filter).populate({ path: 'productCategories', populate: { path: 'category' } }).exec() as Promise<IProductWithCategories[]>;
-    }
-
     static async findUsersWithLocation( filter: FilterQuery<IUser> = {} ): Promise<IUserWithLocation[]> {
         return User.find(filter) .populate('location') .exec() as Promise<IUserWithLocation[]>;
     }

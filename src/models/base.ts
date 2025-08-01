@@ -12,8 +12,15 @@ export class BaseRepository<T extends Document> {
     this.model = model;
   }
 
-  async findById(id: string, options?: QueryOptions): Promise<T | null> {
-    return this.model.findById(id, null, options);
+  async findById( id: string, options?: QueryOptions & { populate?: string | PopulateOptions | (string | PopulateOptions)[] }): Promise<T | null> {
+    let query = this.model.findById(id, null, options);
+    if (options?.populate) {
+      const populates = Array.isArray(options.populate) ? options.populate : [options.populate];
+      for (const p of populates) {
+        query = query.populate(p as any);
+      }
+    }
+    return query.exec();
   }
 
   async findOne(filter: FilterQuery<T>, options?: QueryOptions): Promise<T | null> {

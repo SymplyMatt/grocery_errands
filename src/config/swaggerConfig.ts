@@ -6,7 +6,7 @@ dotenv.config();
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'RHMS Backend',
+    title: 'Shop Cheap',
     version: '1.0.0',
     description: 'API documentation',
   },
@@ -22,15 +22,20 @@ const swaggerDefinition = {
         type: 'apiKey',
         in: 'cookie',
         name: 'token',
-        description: 'Token containing the email, role, and id of the user',
+        description: 'Auth token stored in cookie (contains user info)',
+      },
+      ApiKeyAuth: {
+        type: 'apiKey',
+        in: 'header',
+        name: 'x-api-key',
+        description: 'API key passed in request header',
       },
     },
   },
   security: [
-    {
-      cookieAuth: [],
-    },
-  ],
+    { cookieAuth: [] },
+    { ApiKeyAuth: [] },
+  ],  
 };
 
 const options = {

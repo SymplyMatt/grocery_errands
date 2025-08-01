@@ -1,7 +1,9 @@
 import { Router } from 'express';
-const router = Router();
 import swagger from './swagger'
+import product from './product';
+const router = Router();
 
+router.use('/products', product);
 router.use('/', swagger);
 
 export default router;

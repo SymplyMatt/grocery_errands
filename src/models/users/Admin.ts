@@ -37,8 +37,6 @@ const adminSchema = new Schema<IAdmin>({
   timestamps: true,
   collection: 'admins'
 });
-adminSchema.index({ email: 1 });
-adminSchema.index({ phone: 1 });
 
 adminSchema.virtual('adminAuth', {
   ref: 'AdminAuth',

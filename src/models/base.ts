@@ -1,5 +1,10 @@
-import { Document, Model, FilterQuery, UpdateQuery, QueryOptions } from 'mongoose';
-
+import { Document, Model, FilterQuery, UpdateQuery, QueryOptions, PopulateOptions } from 'mongoose';
+interface FindOptions extends Omit<QueryOptions, 'populate'> {
+  page?: number;
+  limit?: number;
+  sort?: Record<string, 1 | -1>;
+  populate?: string | PopulateOptions | string[] | PopulateOptions[];
+}
 export class BaseRepository<T extends Document> {
   protected model: Model<T>;
 
@@ -15,8 +20,39 @@ export class BaseRepository<T extends Document> {
     return this.model.findOne(filter, null, options);
   }
 
-  async find(filter: FilterQuery<T> = {}, options?: QueryOptions): Promise<T[]> {
-    return this.model.find(filter, null, options);
+  async find( filter: FilterQuery<T> = {}, options: FindOptions = {}
+  ): Promise<{
+    data: T[];
+    pagination: {
+      currentPage: number;
+      totalPages: number;
+      total: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  }> {
+    const { page = 1, limit = 10, sort = { createdAt: -1 }, populate, ...queryOptions } = options;
+    const skip = (page - 1) * limit;
+    const total = await this.model.countDocuments(filter);
+    const totalPages = Math.ceil(total / limit);
+    let query = this.model.find(filter, null, queryOptions).sort(sort).skip(skip).limit(limit);
+    if (populate) {
+      const populates = Array.isArray(populate) ? populate : [populate];
+      query.populate(populates);
+    }    
+
+    const results = await query.exec();
+
+    return {
+      data: results,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        total,
+        hasNext: page < totalPages,
+        hasPrev: page > 1
+      }
+    };
   }
 
   async create(data: Partial<T>): Promise<T> {

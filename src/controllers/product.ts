@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
+import { FilterQuery, PopulateOptions, Types } from 'mongoose';
 import { Product } from '../models/product/Product';
 import { BaseRepository } from '../models/base';
-import { IProduct } from '../models';
+import { ILocationProduct, IProduct, LocationProduct } from '../models';
 
 export class ProductController {
     private productRepository: BaseRepository<IProduct>;
@@ -12,12 +13,21 @@ export class ProductController {
 
     public getAllProducts = async (req: Request, res: Response): Promise<void> => {
         try {
-            const products = await this.productRepository.find();
-            res.status(200).json(products);
+          const products = await this.productRepository.find({}, {
+            populate: [
+                { path: 'productOptions' },
+                { path: 'productContents' },
+                {
+                  path: 'productCategories',
+                  populate: { path: 'category' }
+                }
+              ] as PopulateOptions[]
+          });
+          res.status(200).json(products);
         } catch (err) {
-            res.status(500).json({ message: 'Failed to fetch products', error: err });
+          res.status(500).json({ message: 'Failed to fetch products', error: err });
         }
-    };
+    }; 
 
     public getProductById = async (req: Request, res: Response): Promise<void> => {
         try {
@@ -30,5 +40,36 @@ export class ProductController {
         } catch (err) {
         res.status(500).json({ message: 'Error fetching product', error: err });
         }
+    };
+}
+export class LocationController {
+    private productRepository: BaseRepository<ILocationProduct>;
+
+    constructor() {
+        this.productRepository = new BaseRepository<ILocationProduct>(LocationProduct);
+    }
+
+    public getLocationWithProducts = async (req: Request, res: Response): Promise<void> => {
+      try {
+        const products = await this.productRepository.find({ locationId:req.params.locationId }, {
+          populate: [
+            { path: 'location' },
+            {
+              path: 'product',
+              populate: [
+                { path: 'productOptions' },
+                { path: 'productContents' },
+                {
+                  path: 'productCategories',
+                  populate: { path: 'category' }
+                }
+              ] as PopulateOptions[]
+            }
+          ]
+        });
+        res.status(200).json(products);
+      } catch (err) {
+        res.status(500).json({ message: 'Failed to fetch products', error: err });
+      }
     };
 }

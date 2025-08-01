@@ -29,7 +29,7 @@ export class BaseRepository<T extends Document> {
 
   async find( filter: FilterQuery<T> = {}, options: FindOptions = {}
   ): Promise<{
-    data: T[];
+    results: T[];
     pagination: {
       currentPage: number;
       totalPages: number;
@@ -51,7 +51,7 @@ export class BaseRepository<T extends Document> {
     const results = await query.exec();
 
     return {
-      data: results,
+      results,
       pagination: {
         currentPage: page,
         totalPages,

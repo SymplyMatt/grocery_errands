@@ -63,8 +63,6 @@ router.get('/:id', locationController.getLocationById);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Location'
  *     responses:
  *       201:
  *         description: Location created successfully
@@ -94,8 +92,6 @@ router.post('/', locationController.createLocation);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Location'
  *     responses:
  *       200:
  *         description: Location updated successfully

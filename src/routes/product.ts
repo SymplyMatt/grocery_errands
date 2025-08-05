@@ -92,11 +92,6 @@ router.get('/:id', productcontroller.getProductById);
  *         description: Products found for the location
  *         content:
  *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 location:
- *                   $ref: '#/components/schemas/Location'
  *                 products:
  *                   type: array
  *       404:
@@ -170,8 +165,6 @@ router.get('/location/:locationId', locationproductController.getLocationWithPro
  *         description: Product created successfully
  *         content:
  *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Product'
  *       500:
  *         description: Error creating product
  */

@@ -63,8 +63,6 @@ router.get('/:id', adminController.getAdminById);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Admin'
  *     responses:
  *       201:
  *         description: Admin created successfully
@@ -94,8 +92,6 @@ router.post('/', adminController.createAdmin);
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             $ref: '#/components/schemas/Admin'
  *     responses:
  *       200:
  *         description: Admin updated successfully

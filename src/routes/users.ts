@@ -133,7 +133,7 @@ router.delete('/:id', userController.deleteUser);
  *       500:
  *         description: Error fetching users
  */
-router.get('/:id', userController.getUsersByLocation);
+router.get('/location/:locationId', userController.getUsersByLocation);
 
 /**
  * @swagger
@@ -169,7 +169,7 @@ router.get('/:id', userController.getUsersByLocation);
  *       500:
  *         description: Error searching users
  */
-router.get('/:id', userController.searchUsers);
+router.get('/search', userController.searchUsers);
 
 /**
  * @swagger
@@ -193,7 +193,7 @@ router.get('/:id', userController.searchUsers);
  *       500:
  *         description: Error fetching user profile
  */
-router.get('/:id', userController.getUserProfile);
+router.get('/profile/:id', userController.getUserProfile);
 
 /**
  * @swagger

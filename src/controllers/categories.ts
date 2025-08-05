@@ -35,6 +35,11 @@ export class CategoryController {
     public createCategory = async (req: Request, res: Response): Promise<void> => {
         try {
             const { name, image } = req.body;
+            const existingCategory = await this.productRepository.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }});
+            if (existingCategory) {
+                res.status(409).json({ message: 'Category with this name already exists' });
+                return;
+            }
             const categoryData = { name, image, createdBy: "", updatedBy: "" };
             const category = await this.categoryRepository.create(categoryData);
             res.status(201).json({ message: 'Category created successfully', category });

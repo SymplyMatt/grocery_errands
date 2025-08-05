@@ -47,6 +47,11 @@ export class ProductController {
 
   public createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
+      const existingProduct = await this.productRepository.findOne({ name: { $regex: new RegExp(`^${req.body.name}$`, 'i') }});
+      if (existingProduct) {
+        res.status(409).json({ message: 'Product with this name already exists' });
+        return;
+      }
       const productData = { createdBy: "", updatedBy: "", description: req.body.description, name: req.body.name, image: req.body.image };
       const product: IProduct = await this.productRepository.create(productData);
       const productCategories =req.body.categories || [];

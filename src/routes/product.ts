@@ -210,6 +210,7 @@ router.post('/create', productcontroller.createProduct);
  *         description: Error adding product option
  */
 router.post('/products/:productId/options', productcontroller.addProductOption);
+
 /**
  * @swagger
  * /products/{productId}/locations:
@@ -245,6 +246,7 @@ router.post('/products/:productId/options', productcontroller.addProductOption);
  *         description: Error adding product location
  */
 router.post('/products/:productId/locations', productcontroller.addProductLocation);
+
 /**
  * @swagger
  * /products/{productId}/categories:
@@ -280,6 +282,7 @@ router.post('/products/:productId/locations', productcontroller.addProductLocati
  *         description: Error adding product category
  */
 router.post('/products/:productId/categories', productcontroller.addProductCategory);
+
 /**
  * @swagger
  * /products/{id}:
@@ -315,6 +318,7 @@ router.post('/products/:productId/categories', productcontroller.addProductCateg
  *         description: Error updating product
  */
 router.put('/products/:id', productcontroller.updateProduct);
+
 /**
  * @swagger
  * /products/{productId}/content:
@@ -418,6 +422,7 @@ router.put('/products/:productId/options/:optionId', productcontroller.updatePro
  *         description: Error deleting product
  */
 router.delete('/products/:id', productcontroller.deleteProduct);
+
 /**
  * @swagger
  * /products/{productId}/categories/{categoryId}:

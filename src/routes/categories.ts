@@ -25,7 +25,7 @@ const categoryController = new CategoryController();
  *       500:
  *         description: Failed to fetch categories
  */
-router.get('/categories', categoryController.getAllCategories);
+router.get('/', categoryController.getAllCategories);
 
 /**
  * @swagger
@@ -49,7 +49,7 @@ router.get('/categories', categoryController.getAllCategories);
  *       500:
  *         description: Error fetching category
  */
-router.get('/categories/:id', categoryController.getCategoryById);
+router.get('/:id', categoryController.getCategoryById);
 
 /**
  * @swagger
@@ -81,7 +81,7 @@ router.get('/categories/:id', categoryController.getCategoryById);
  *       500:
  *         description: Error fetching products
  */
-router.get('/categories/:categoryId/products', categoryController.getProductsInCategory);
+router.get('/:categoryId/products', categoryController.getProductsInCategory);
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ router.get('/categories/:categoryId/products', categoryController.getProductsInC
  *       500:
  *         description: Error fetching categories by location
  */
-router.get('/locations/:locationId/categories', categoryController.getCategoriesByLocation);
+router.get('/:locationId/categories', categoryController.getCategoriesByLocation);
 
 /**
  * @swagger
@@ -125,13 +125,18 @@ router.get('/locations/:locationId/categories', categoryController.getCategories
  *                 type: string
  *               image:
  *                 type: string
+ *               locations:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of category IDs
  *     responses:
  *       201:
  *         description: Category created successfully
  *       500:
  *         description: Error creating category
  */
-router.post('/categories', categoryController.createCategory);
+router.post('/', categoryController.createCategory);
 
 /**
  * @swagger
@@ -163,7 +168,7 @@ router.post('/categories', categoryController.createCategory);
  *       500:
  *         description: Error associating category
  */
-router.post('/categories/locations', categoryController.addCategoryToLocation);
+router.post('/locations', categoryController.addCategoryToLocation);
 
 /**
  * @swagger
@@ -197,7 +202,7 @@ router.post('/categories/locations', categoryController.addCategoryToLocation);
  *       500:
  *         description: Error updating category
  */
-router.put('/categories/:id', categoryController.updateCategory);
+router.put('/:id', categoryController.updateCategory);
 
 /**
  * @swagger
@@ -221,7 +226,7 @@ router.put('/categories/:id', categoryController.updateCategory);
  *       500:
  *         description: Error deleting category
  */
-router.delete('/categories/:id', categoryController.deleteCategory);
+router.delete('/:id', categoryController.deleteCategory);
 
 /**
  * @swagger
@@ -250,6 +255,6 @@ router.delete('/categories/:id', categoryController.deleteCategory);
  *       500:
  *         description: Error removing category from location
  */
-router.delete('/categories/:categoryId/locations/:locationId', categoryController.removeCategoryFromLocation);
+router.delete('/:categoryId/locations/:locationId', categoryController.removeCategoryFromLocation);
 
 export default router;

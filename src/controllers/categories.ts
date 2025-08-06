@@ -12,7 +12,7 @@ export class CategoryController {
 
     public getAllCategories = async (req: Request, res: Response): Promise<void> => {
         try {
-            const categories = await this.categoryRepository.find({ populate: ['productCategories', 'locationCategories'] });
+            const categories = await this.categoryRepository.find({}, { populate: [ { path:'productCategories' }, { path: 'locationCategories', populate: "location" }] });
             res.status(200).json(categories);
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch categories', error: err });
@@ -35,14 +35,17 @@ export class CategoryController {
     public createCategory = async (req: Request, res: Response): Promise<void> => {
         try {
             const { name, image } = req.body;
-            const existingCategory = await this.productRepository.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }});
+            const existingCategory = await this.categoryRepository.findOne({ name: { $regex: new RegExp(`^${name}$`, 'i') }});
             if (existingCategory) {
                 res.status(409).json({ message: 'Category with this name already exists' });
                 return;
             }
-            const categoryData = { name, image, createdBy: "", updatedBy: "" };
+            const categoryData = { name, image, createdBy: "admin", updatedBy: "admin" };
             const category = await this.categoryRepository.create(categoryData);
-            res.status(201).json({ message: 'Category created successfully', category });
+            const locationCategories = req.body.locations || [];
+            const locationCategoriesDocs = locationCategories.map((locationId: string) => ({ categoryId: category._id, locationId }));
+            const savedLocationCategories = await LocationCategory.insertMany(locationCategoriesDocs);
+            res.status(201).json({ message: 'Category created successfully', category, locationCategories: savedLocationCategories });
         } catch (err) {
             res.status(500).json({ message: 'Error creating category', error: err });
         }

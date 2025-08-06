@@ -52,7 +52,7 @@ export class ProductController {
         res.status(409).json({ message: 'Product with this name already exists' });
         return;
       }
-      const productData = { createdBy: "", updatedBy: "", description: req.body.description, name: req.body.name, image: req.body.image };
+      const productData = { createdBy: "admin", updatedBy: "admin", description: req.body.description, name: req.body.name, image: req.body.image };
       const product: IProduct = await this.productRepository.create(productData);
       const productCategories =req.body.categories || [];
       const productContent = req.body.content;

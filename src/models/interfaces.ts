@@ -69,6 +69,7 @@ export interface IUser extends Document, ITimestamps, ISoftDelete {
   whatsapp?: string | null;
   locationId: Types.ObjectId;
   username: string;
+  verified: boolean;
   
   location?: ILocation;
   userAuth?: IUserAuth;
@@ -87,6 +88,7 @@ export interface IAdmin extends Document, ITimestamps, ISoftDelete {
   lastname: string;
   email: string;
   phone: string;
+  verified: boolean;
   createdBy?: string | null;
   updatedBy?: string | null;
   

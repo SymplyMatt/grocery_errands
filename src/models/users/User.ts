@@ -35,6 +35,10 @@ const userSchema = new Schema<IUser>({
     required: true,
     unique: true
   },
+  verified: {
+    type: Boolean,
+    default: false
+  },
   deletedAt: {
     type: Date,
     default: null

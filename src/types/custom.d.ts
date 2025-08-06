@@ -1,9 +1,16 @@
+// types/express.d.ts
 import { Request } from 'express';
 
-declare module 'express-serve-static-core' {
-  interface Request {
-    email?: string;
-    id?: string;
-    role?: string;
+declare global {
+  namespace Express {
+    interface Request {
+      user?: string; 
+      email?: string;
+      phone?: string;
+      username?: string | null;
+      role?: string;
+      apiToken?: string;
+      apiKey?: string;
+    }
   }
 }

@@ -16,9 +16,17 @@ const categoryController = new CategoryController();
  * /categories:
  *   get:
  *     summary: Get all categories
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     responses:
  *       200:
  *         description: List of categories
@@ -32,10 +40,17 @@ router.get('/', categoryController.getAllCategories);
  * /categories/{id}:
  *   get:
  *     summary: Get a category by ID
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -56,10 +71,17 @@ router.get('/:id', categoryController.getCategoryById);
  * /categories/{categoryId}/products:
  *   get:
  *     summary: Get products under a category
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: categoryId
  *         in: path
  *         required: true
@@ -88,10 +110,17 @@ router.get('/:categoryId/products', categoryController.getProductsInCategory);
  * /locations/{locationId}/categories:
  *   get:
  *     summary: Get categories in a specific location
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: locationId
  *         in: path
  *         required: true
@@ -110,9 +139,17 @@ router.get('/:locationId/categories', categoryController.getCategoriesByLocation
  * /categories:
  *   post:
  *     summary: Create a new category
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -143,9 +180,17 @@ router.post('/', categoryController.createCategory);
  * /categories/locations:
  *   post:
  *     summary: Associate a category with a location
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -175,10 +220,17 @@ router.post('/locations', categoryController.addCategoryToLocation);
  * /categories/{id}:
  *   put:
  *     summary: Update a category
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -209,10 +261,17 @@ router.put('/:id', categoryController.updateCategory);
  * /categories/{id}:
  *   delete:
  *     summary: Soft delete a category
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -233,10 +292,17 @@ router.delete('/:id', categoryController.deleteCategory);
  * /categories/{categoryId}/locations/{locationId}:
  *   delete:
  *     summary: Remove a category-location association
- *     tags: [Categories]
+ *     tags: [Categories] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: categoryId
  *         in: path
  *         required: true

@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthRequest } from './authenticateToken';
 
-const authenticateAdmin = (req: AuthRequest, res: Response, next: NextFunction) => {
+const authenticateAdmin = (req: Request, res: Response, next: NextFunction) => {
   const user_role = req.role || '';
   try {
       if (user_role !== 'admin') {

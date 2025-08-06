@@ -12,19 +12,27 @@ const locationController = new LocationController();
  */
 
  /**
-  * @swagger
-  * /locations:
-  *   get:
-  *     summary: Get all locations
-  *     tags: [Locations]
-  *     security:
-  *       - ApiKeyAuth: []
-  *     responses:
-  *       200:
-  *         description: List of all locations
-  *       500:
-  *         description: Failed to fetch locations
-  */
+* @swagger
+* /locations:
+*   get:
+*     summary: Get all locations
+*     tags: [Locations] 
+*     security:
+*       - bearerAuth: []
+*       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+*     parameters:
+*       - in: header
+*         name: x-api-key
+*         required: true
+*         schema:
+*           type: string
+*         description: The API key for authentication
+*     responses:
+*       200:
+*         description: List of all locations
+*       500:
+*         description: Failed to fetch locations
+*/
 router.get('/', locationController.getAllLocations);
 
 /**
@@ -32,10 +40,17 @@ router.get('/', locationController.getAllLocations);
  * /locations/{id}:
  *   get:
  *     summary: Get a location by ID
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -56,10 +71,17 @@ router.get('/:id', locationController.getLocationById);
  * /locations/{locationId}/categories:
  *   get:
  *     summary: Get categories associated with a location
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: locationId
  *         in: path
  *         required: true
@@ -88,10 +110,17 @@ router.get('/:locationId/categories', locationController.getLocationCategories);
  * /locations/{locationId}/products:
  *   get:
  *     summary: Get products associated with a location
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: locationId
  *         in: path
  *         required: true
@@ -122,10 +151,17 @@ router.get('/:locationId/products', locationController.getLocationProducts);
  * /locations/{locationId}/stats:
  *   get:
  *     summary: Get location statistics
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: locationId
  *         in: path
  *         required: true
@@ -146,9 +182,17 @@ router.get('/:locationId/stats', locationController.getLocationStats);
  * /locations:
  *   post:
  *     summary: Create a new location
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -174,10 +218,17 @@ router.post('/', locationController.createLocation);
  * /locations/{id}:
  *   put:
  *     summary: Update a location
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -208,10 +259,17 @@ router.put('/:id', locationController.updateLocation);
  * /locations/{id}:
  *   delete:
  *     summary: Delete a location
- *     tags: [Locations]
+ *     tags: [Locations] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true

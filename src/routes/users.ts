@@ -10,9 +10,25 @@ const userController = new UserController();
  *   get:
  *     summary: Get all users
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     responses:
  *       200:
  *         description: A list of users
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal Server Error
  */
 router.get('/', userController.getAllUsers);
 
@@ -22,7 +38,16 @@ router.get('/', userController.getAllUsers);
  *   get:
  *     summary: Get a user by ID
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -32,8 +57,14 @@ router.get('/', userController.getAllUsers);
  *     responses:
  *       200:
  *         description: User found
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal Server Error
  */
 router.get('/users/:id', userController.getUserById);
 
@@ -43,6 +74,16 @@ router.get('/users/:id', userController.getUserById);
  *   post:
  *     summary: Create a new user
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -52,6 +93,14 @@ router.get('/users/:id', userController.getUserById);
  *     responses:
  *       201:
  *         description: User created successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal Server Error
  */
 router.post('/', userController.createUser);
 
@@ -61,7 +110,16 @@ router.post('/', userController.createUser);
  *   put:
  *     summary: Update a user
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -77,8 +135,16 @@ router.post('/', userController.createUser);
  *     responses:
  *       200:
  *         description: User updated successfully
+ *       400:
+ *         description: Bad Request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal Server Error
  */
 router.put('/:id', userController.updateUser);
 
@@ -88,7 +154,16 @@ router.put('/:id', userController.updateUser);
  *   delete:
  *     summary: Delete a user
  *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -98,8 +173,14 @@ router.put('/:id', userController.updateUser);
  *     responses:
  *       200:
  *         description: User deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal Server Error
  */
 router.delete('/:id', userController.deleteUser);
 
@@ -108,10 +189,17 @@ router.delete('/:id', userController.deleteUser);
  * /users/location/{locationId}:
  *   get:
  *     summary: Get users by location
- *     tags: [Users]
+ *     tags: [Users] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: locationId
  *         in: path
  *         required: true
@@ -128,6 +216,10 @@ router.delete('/:id', userController.deleteUser);
  *     responses:
  *       200:
  *         description: List of users by location
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Location not found
  *       500:
@@ -140,10 +232,17 @@ router.get('/location/:locationId', userController.getUsersByLocation);
  * /users/search:
  *   get:
  *     summary: Search users
- *     tags: [Users]
+ *     tags: [Users] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: q
  *         in: query
  *         required: true
@@ -166,6 +265,10 @@ router.get('/location/:locationId', userController.getUsersByLocation);
  *         description: Search results
  *       400:
  *         description: Search query is required
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       500:
  *         description: Error searching users
  */
@@ -176,10 +279,17 @@ router.get('/search', userController.searchUsers);
  * /users/profile/{id}:
  *   get:
  *     summary: Get user profile
- *     tags: [Users]
+ *     tags: [Users] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -188,6 +298,10 @@ router.get('/search', userController.searchUsers);
  *     responses:
  *       200:
  *         description: User profile retrieved
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: User not found
  *       500:
@@ -200,10 +314,17 @@ router.get('/profile/:id', userController.getUserProfile);
  * /users/{userId}/location:
  *   put:
  *     summary: Update user location
- *     tags: [Users]
+ *     tags: [Users] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: userId
  *         in: path
  *         required: true
@@ -224,6 +345,10 @@ router.get('/profile/:id', userController.getUserProfile);
  *         description: User location updated
  *       400:
  *         description: Invalid location ID
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: User not found
  *       500:
@@ -293,4 +418,5 @@ router.put('/:userId/location', userController.updateUserLocation);
  *                   type: string
  */
 router.post('/login', userController.login);
+
 export default router;

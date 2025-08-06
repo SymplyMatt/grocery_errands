@@ -1,9 +1,8 @@
 import { Request, Response } from 'express';
 import ApiKey, { IApiKey } from '../models/auth/APiKey';
-import { AuthRequest } from '../middleware/authenticateToken';
 
 class KeysController {
-    public static async createKey(req: AuthRequest, res: Response) {
+    public static async createKey(req: Request, res: Response) {
         try {
             const { owner } = req.body;
             const key = generateApiKey();
@@ -17,7 +16,7 @@ class KeysController {
         }
     }
 
-    public static async deleteKey(req: AuthRequest, res: Response) {
+    public static async deleteKey(req: Request, res: Response) {
         try {
             const { id } = req.params;
             const apiKey = await ApiKey.findById(id);
@@ -31,7 +30,7 @@ class KeysController {
         }
     }
 
-    public static async getKey(req: AuthRequest, res: Response) {
+    public static async getKey(req: Request, res: Response) {
         try {
             const { id } = req.params;
             const apiKey = await ApiKey.findById(id);
@@ -59,7 +58,7 @@ class KeysController {
         }
     }
 
-    public static async getAllKeys(req: AuthRequest, res: Response) {
+    public static async getAllKeys(req: Request, res: Response) {
         try {
             const apiKeys = await ApiKey.find();
             res.status(200).json({ apiKeys });
@@ -69,7 +68,7 @@ class KeysController {
         }
     }
 
-    public static async updateUsageCount(req: AuthRequest, res: Response) {
+    public static async updateUsageCount(req: Request, res: Response) {
         try {
             const { id } = req.params;
             const apiKey = await ApiKey.findById(id);
@@ -88,7 +87,7 @@ class KeysController {
 }
 
     function generateApiKey(): string {
-    return `api_${Math.random().toString(36).substring(2, 15)}`;
+        return `api_${Math.random().toString(36).substring(2, 15)}`;
     }
 
 export default KeysController;

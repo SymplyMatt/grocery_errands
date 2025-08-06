@@ -10,7 +10,16 @@ const adminController = new AdminController();
  *   get:
  *     summary: Get all admins
  *     tags: [Admins]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: query
  *         name: page
  *         schema:
@@ -33,7 +42,16 @@ router.get('/', adminController.getAllAdmins);
  *   get:
  *     summary: Get admin by ID
  *     tags: [Admins]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -53,7 +71,17 @@ router.get('/:id', adminController.getAdminById);
  * /admins:
  *   post:
  *     summary: Create a new admin
- *     tags: [Admins]
+ *     tags: [Admins] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -71,8 +99,17 @@ router.post('/', adminController.createAdmin);
  * /admins/{id}:
  *   put:
  *     summary: Update an admin
- *     tags: [Admins]
+ *     tags: [Admins] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -98,8 +135,17 @@ router.put('/:id', adminController.updateAdmin);
  * /admins/{id}/password:
  *   put:
  *     summary: Update admin password
- *     tags: [Admins]
+ *     tags: [Admins] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -132,8 +178,17 @@ router.put('/:id/password', adminController.updateAdminPassword);
  * /admins/{id}:
  *   delete:
  *     summary: Soft delete an admin
- *     tags: [Admins]
+ *     tags: [Admins] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -153,7 +208,17 @@ router.delete('/:id', adminController.deleteAdmin);
  * /admins/login:
  *   post:
  *     summary: Admin login
- *     tags: [Auth]
+ *     tags: [Auth] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:

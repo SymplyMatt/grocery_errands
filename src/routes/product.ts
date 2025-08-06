@@ -11,10 +11,17 @@ const locationproductController = new LocationProductController();
  * /products:
  *   get:
  *     summary: Get all products
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: query
  *         name: page
  *         schema:
@@ -50,10 +57,17 @@ router.get('/', productcontroller.getAllProducts);
  * /products/{id}:
  *   get:
  *     summary: Get product by ID
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -77,10 +91,17 @@ router.get('/:id', productcontroller.getProductById);
  * /products/location/{locationId}:
  *   get:
  *     summary: Get all products by location
- *     tags: [Products] 
+ *     tags: [Products]  
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - in: path
  *         name: locationId
  *         required: true
@@ -106,9 +127,17 @@ router.get('/location/:locationId', locationproductController.getLocationWithPro
  * /products/create:
  *   post:
  *     summary: Create a new product
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -175,10 +204,17 @@ router.post('/create', productcontroller.createProduct);
  * /products/{productId}/options:
  *   post:
  *     summary: Add a product option
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -216,10 +252,17 @@ router.post('/products/:productId/options', productcontroller.addProductOption);
  * /products/{productId}/locations:
  *   post:
  *     summary: Add a location to a product
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -252,10 +295,17 @@ router.post('/products/:productId/locations', productcontroller.addProductLocati
  * /products/{productId}/categories:
  *   post:
  *     summary: Add a category to a product
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -288,10 +338,17 @@ router.post('/products/:productId/categories', productcontroller.addProductCateg
  * /products/{id}:
  *   put:
  *     summary: Update product details
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -324,10 +381,17 @@ router.put('/products/:id', productcontroller.updateProduct);
  * /products/{productId}/content:
  *   put:
  *     summary: Update product content
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -360,10 +424,17 @@ router.put('/products/:productId/content', productcontroller.updateProductConten
  * /products/{productId}/options/{optionId}:
  *   put:
  *     summary: Update a product option
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -404,10 +475,17 @@ router.put('/products/:productId/options/:optionId', productcontroller.updatePro
  * /products/{id}:
  *   delete:
  *     summary: Delete a product and all related data
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: id
  *         in: path
  *         required: true
@@ -428,10 +506,17 @@ router.delete('/products/:id', productcontroller.deleteProduct);
  * /products/{productId}/categories/{categoryId}:
  *   delete:
  *     summary: Remove a category from a product
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true
@@ -457,10 +542,17 @@ router.delete('/products/:productId/categories/:categoryId', productcontroller.r
  * /products/{productId}/options/{optionId}:
  *   delete:
  *     summary: Delete a product option
- *     tags: [Products]
+ *     tags: [Products] 
  *     security:
- *       - ApiKeyAuth: []
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *       - name: productId
  *         in: path
  *         required: true

@@ -86,11 +86,43 @@ router.get('/:id', adminController.getAdminById);
  *       required: true
  *       content:
  *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - firstname
+ *               - lastname
+ *               - email
+ *               - phone
+ *               - username
+ *               - password
+ *             properties:
+ *               firstname:
+ *                 type: string
+ *               lastname:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *                 description: Phone number in international format (e.g. +234...)
+ *               username:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               role:
+ *                 type: string
+ *                 default: admin
+ *               permissions:
+ *                 type: array
+ *                 items:
+ *                   type: string
  *     responses:
  *       201:
  *         description: Admin created successfully
  *       409:
  *         description: Email, username, or phone already exists
+ *       500:
+ *         description: Error creating admin
  */
 router.post('/', adminController.createAdmin);
 

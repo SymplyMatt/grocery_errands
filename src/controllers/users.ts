@@ -76,7 +76,18 @@ export class UserController {
             const userData = { firstname, lastname, email: email.toLowerCase(), phone, whatsapp: whatsapp || null, locationId, username, deletedAt: null };
             const user = await this.userRepository.create(userData);
             const userAuthData = { userId: user._id,password: hashedPassword };
-            const userAuth = await UserAuth.create(userAuthData);
+            await UserAuth.create(userAuthData);
+            const jwtSecret = process.env.JWT_SECRET as string;
+            const accessToken = jwt.sign(
+                { user: user._id, email: user.email, username: user.username,role: 'user', phone: user.phone },
+                jwtSecret,
+                { expiresIn: '7d' }
+            );
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
             res.status(201).json({ 
                 message: 'User created successfully', 
                 user: user 

@@ -37,7 +37,7 @@ export class AdminController {
 
     public createAdmin = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { firstname, lastname, email, phone, username, password, role, permissions } = req.body;
+            const { firstname, lastname, email, phone, username, password, role } = req.body;
             const existingEmailAdmin = await this.adminRepository.findOne({ 
                 email: email.toLowerCase(),
                 deletedAt: null 
@@ -66,13 +66,24 @@ export class AdminController {
             }
             const saltRounds = 12;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
-            const adminData = { firstname, lastname, email: email.toLowerCase(), phone: phone || null, username, role: role || 'admin', permissions: permissions || [], isActive: true, deletedAt: null, createdBy: "", updatedBy: "" };
+            const adminData = { firstname, lastname, email: email.toLowerCase(), phone: phone || null, username, role: role || 'admin', deletedAt: null, createdBy: "", updatedBy: "" };
             const admin = await this.adminRepository.create(adminData);
             const adminAuthData = {
                 adminId: admin._id,
                 password: hashedPassword
             };
             const adminAuth = await AdminAuth.create(adminAuthData);
+            const jwtSecret = process.env.JWT_SECRET as string;
+            const accessToken = jwt.sign(
+                { user: admin._id, email: admin.email, username: "", role: 'admin', phone: admin.phone },
+                jwtSecret,
+                { expiresIn: '7d' }
+            );
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
             res.status(201).json({
                 message: 'Admin created successfully',
                 admin: { admin, adminAuth }

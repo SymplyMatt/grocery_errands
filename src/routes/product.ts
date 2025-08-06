@@ -1,6 +1,8 @@
 import express from 'express';
 import { ProductController } from '../controllers/product';
 import { LocationProductController } from '../controllers/locationProduct';
+import authenticateToken from '../middleware/authenticateToken';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 const productcontroller = new ProductController();
@@ -197,7 +199,11 @@ router.get('/location/:locationId', locationproductController.getLocationWithPro
  *       500:
  *         description: Error creating product
  */
-router.post('/create', productcontroller.createProduct);
+router.post('/create',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.createProduct
+);
 
 /**
  * @swagger
@@ -245,7 +251,11 @@ router.post('/create', productcontroller.createProduct);
  *       500:
  *         description: Error adding product option
  */
-router.post('/products/:productId/options', productcontroller.addProductOption);
+router.post('/products/:productId/options',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.addProductOption
+);
 
 /**
  * @swagger
@@ -288,7 +298,11 @@ router.post('/products/:productId/options', productcontroller.addProductOption);
  *       500:
  *         description: Error adding product location
  */
-router.post('/products/:productId/locations', productcontroller.addProductLocation);
+router.post('/products/:productId/locations',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.addProductLocation
+);
 
 /**
  * @swagger
@@ -331,7 +345,11 @@ router.post('/products/:productId/locations', productcontroller.addProductLocati
  *       500:
  *         description: Error adding product category
  */
-router.post('/products/:productId/categories', productcontroller.addProductCategory);
+router.post('/products/:productId/categories',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.addProductCategory
+);
 
 /**
  * @swagger
@@ -374,7 +392,11 @@ router.post('/products/:productId/categories', productcontroller.addProductCateg
  *       500:
  *         description: Error updating product
  */
-router.put('/products/:id', productcontroller.updateProduct);
+router.put('/products/:id',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.updateProduct
+);
 
 /**
  * @swagger
@@ -417,7 +439,11 @@ router.put('/products/:id', productcontroller.updateProduct);
  *       500:
  *         description: Error updating product content
  */
-router.put('/products/:productId/content', productcontroller.updateProductContent);
+router.put('/products/:productId/content',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.updateProductContent
+);
 
 /**
  * @swagger
@@ -468,7 +494,11 @@ router.put('/products/:productId/content', productcontroller.updateProductConten
  *       500:
  *         description: Error updating product option
  */
-router.put('/products/:productId/options/:optionId', productcontroller.updateProductOption);
+router.put('/products/:productId/options/:optionId',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.updateProductOption
+);
 
 /**
  * @swagger
@@ -499,7 +529,11 @@ router.put('/products/:productId/options/:optionId', productcontroller.updatePro
  *       500:
  *         description: Error deleting product
  */
-router.delete('/products/:id', productcontroller.deleteProduct);
+router.delete('/products/:id',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.deleteProduct
+);
 
 /**
  * @swagger
@@ -535,7 +569,11 @@ router.delete('/products/:id', productcontroller.deleteProduct);
  *       500:
  *         description: Error removing product category
  */
-router.delete('/products/:productId/categories/:categoryId', productcontroller.removeProductCategory);
+router.delete('/products/:productId/categories/:categoryId',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.removeProductCategory
+);
 
 /**
  * @swagger
@@ -571,6 +609,10 @@ router.delete('/products/:productId/categories/:categoryId', productcontroller.r
  *       500:
  *         description: Error deleting product option
  */
-router.delete('/products/:productId/options/:optionId', productcontroller.deleteProductOption);
+router.delete('/products/:productId/options/:optionId',
+    authenticateToken,
+    authenticateAdmin, 
+    productcontroller.deleteProductOption
+);
 
 export default router;

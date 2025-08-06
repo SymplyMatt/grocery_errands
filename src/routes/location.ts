@@ -1,5 +1,7 @@
 import express from 'express';
 import { LocationController } from '../controllers/location';
+import authenticateToken from '../middleware/authenticateToken';
+import authenticateAdmin from '../middleware/authenticateAdmin';
 
 const router = express.Router();
 const locationController = new LocationController();
@@ -211,7 +213,11 @@ router.get('/:locationId/stats', locationController.getLocationStats);
  *       500:
  *         description: Error creating location
  */
-router.post('/', locationController.createLocation);
+router.post('/', 
+    authenticateToken,
+    authenticateAdmin,
+    locationController.createLocation
+);
 
 /**
  * @swagger
@@ -252,7 +258,11 @@ router.post('/', locationController.createLocation);
  *       500:
  *         description: Error updating location
  */
-router.put('/:id', locationController.updateLocation);
+router.put('/:id', 
+    authenticateToken,
+    authenticateAdmin,
+    locationController.updateLocation
+);
 
 /**
  * @swagger
@@ -285,6 +295,10 @@ router.put('/:id', locationController.updateLocation);
  *       500:
  *         description: Error deleting location
  */
-router.delete('/:id', locationController.deleteLocation);
+router.delete('/:id', 
+    authenticateToken,
+    authenticateAdmin,
+    locationController.deleteLocation
+);
 
 export default router;

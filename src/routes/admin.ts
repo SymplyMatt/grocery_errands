@@ -1,5 +1,7 @@
 import express from 'express';
 import { AdminController } from '../controllers/admins';
+import authenticateAdmin from '../middleware/authenticateAdmin';
+import authenticateToken from '../middleware/authenticateToken';
 
 const router = express.Router();
 const adminController = new AdminController();
@@ -34,7 +36,11 @@ const adminController = new AdminController();
  *       200:
  *         description: A list of admins
  */
-router.get('/', adminController.getAllAdmins);
+router.get('/',
+    authenticateToken,
+    authenticateAdmin, 
+    adminController.getAllAdmins
+);
 
 /**
  * @swagger
@@ -64,7 +70,11 @@ router.get('/', adminController.getAllAdmins);
  *       404:
  *         description: Admin not found
  */
-router.get('/:id', adminController.getAdminById);
+router.get('/:id', 
+    authenticateToken,
+    authenticateAdmin,
+    adminController.getAdminById
+);
 
 /**
  * @swagger
@@ -124,7 +134,11 @@ router.get('/:id', adminController.getAdminById);
  *       500:
  *         description: Error creating admin
  */
-router.post('/', adminController.createAdmin);
+router.post('/',
+    authenticateToken,
+    authenticateAdmin, 
+    adminController.createAdmin
+);
 
 /**
  * @swagger
@@ -160,7 +174,11 @@ router.post('/', adminController.createAdmin);
  *       409:
  *         description: Email, username, or phone already exists
  */
-router.put('/:id', adminController.updateAdmin);
+router.put('/:id', 
+    authenticateToken,
+    authenticateAdmin,
+    adminController.updateAdmin
+);
 
 /**
  * @swagger
@@ -203,7 +221,11 @@ router.put('/:id', adminController.updateAdmin);
  *       404:
  *         description: Admin not found
  */
-router.put('/:id/password', adminController.updateAdminPassword);
+router.put('/:id/password',
+    authenticateToken,
+    authenticateAdmin, 
+    adminController.updateAdminPassword
+);
 
 /**
  * @swagger
@@ -233,7 +255,11 @@ router.put('/:id/password', adminController.updateAdminPassword);
  *       404:
  *         description: Admin not found
  */
-router.delete('/:id', adminController.deleteAdmin);
+router.delete('/:id',
+    authenticateToken,
+    authenticateAdmin, 
+    adminController.deleteAdmin
+);
 
 /**
  * @swagger
@@ -306,6 +332,8 @@ router.delete('/:id', adminController.deleteAdmin);
  *                 error:
  *                   type: string
  */
-router.post('/login', adminController.login);
+router.post('/login', 
+    adminController.login
+);
 
 export default router;

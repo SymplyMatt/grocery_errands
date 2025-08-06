@@ -184,10 +184,17 @@ router.get('/:id',
  * /keys:
  *   get:
  *     summary: Retrieve all API keys
- *     tags: [API Keys]
+ *     tags: [API Keys] 
  *     security:
  *       - bearerAuth: []
  *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
  *     responses:
  *       200:
  *         description: List of API keys retrieved successfully

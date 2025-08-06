@@ -9,6 +9,8 @@ import timeout from 'connect-timeout';
 import cookieParser from 'cookie-parser';
 import router from './routes/router';
 import connectDB from './config/mongodb';
+import { decryptApiKey } from './middleware/decryptAndCheckKey';
+import { authenticateApiKey } from './middleware/authenticateApiKey';
 
 dotenv.config();
 validateEnv();
@@ -29,7 +31,7 @@ app.use(rateLimiter);
 app.set('x-powered-by', false);
 app.use(cookieParser());
 
-app.use('/', router);
+app.use('/', decryptApiKey, authenticateApiKey, router);
 app.use(handleErrors);
 connectDB();
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

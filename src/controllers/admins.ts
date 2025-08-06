@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { BaseRepository } from '../models/base';
 import { IAdmin, Admin, AdminAuth } from '../models';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 export class AdminController {
     private adminRepository: BaseRepository<IAdmin>;
@@ -190,6 +191,48 @@ export class AdminController {
             res.status(200).json({ message: 'Admin password updated successfully' });
         } catch (err) {
             res.status(500).json({ message: 'Error updating admin password', error: err });
+        }
+    };
+
+    public login = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { identifier, password } = req.body;
+            const user = await this.adminRepository.findOne({
+                $or: [
+                    { email: identifier.toLowerCase() },
+                    { phone: identifier }
+                ],
+                deletedAt: null
+            });
+            if (!user) {
+                res.status(401).json({ message: 'Invalid credentials' });
+                return;
+            }
+            const userAuth = await AdminAuth.findOne({ userId: user._id });
+            if (!userAuth) {
+                res.status(401).json({ message: 'Authentication record not found' });
+                return;
+            }
+            const isPasswordValid = await bcrypt.compare(password, userAuth.password);
+            if (!isPasswordValid) {
+                res.status(401).json({ 
+                    message: 'Invalid credentials',
+                });
+                return;
+            }
+            const jwtSecret = process.env.JWT_SECRET as string;
+            const accessToken = jwt.sign(
+                { user: user._id, email: user.email, username: "",locationId: "",type: 'user' },
+                jwtSecret,
+                { expiresIn: '7d' }
+            );
+            res.status(200).json({
+                message: 'Login successful',
+                user,
+                accessToken
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Login failed', error: err });
         }
     };
 }

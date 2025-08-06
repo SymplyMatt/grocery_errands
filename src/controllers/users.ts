@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { BaseRepository } from '../models/base';
 import { IUser, User, ILocation, Location, UserAuth } from '../models';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 export class UserController {
     private userRepository: BaseRepository<IUser>;
     private locationRepository: BaseRepository<ILocation>;
@@ -262,6 +263,51 @@ export class UserController {
             });
         } catch (err) {
             res.status(500).json({ message: 'Error updating user location', error: err });
+        }
+    };
+
+    public login = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { identifier, password } = req.body;
+            const user = await this.userRepository.findOne({
+                $or: [
+                    { email: identifier.toLowerCase() },
+                    { username: identifier },
+                    { phone: identifier }
+                ],
+                deletedAt: null
+            }, {
+                populate: ['location','deliveryAddresses','notifications']
+            });
+            if (!user) {
+                res.status(401).json({ message: 'Invalid credentials' });
+                return;
+            }
+            const userAuth = await UserAuth.findOne({ userId: user._id });
+            if (!userAuth) {
+                res.status(401).json({ message: 'Authentication record not found' });
+                return;
+            }
+            const isPasswordValid = await bcrypt.compare(password, userAuth.password);
+            if (!isPasswordValid) {
+                res.status(401).json({ 
+                    message: 'Invalid credentials',
+                });
+                return;
+            }
+            const jwtSecret = process.env.JWT_SECRET as string;
+            const accessToken = jwt.sign(
+                { user: user._id, email: user.email, username: user.username,locationId: user.locationId,type: 'user' },
+                jwtSecret,
+                { expiresIn: '7d' }
+            );
+            res.status(200).json({
+                message: 'Login successful',
+                user,
+                accessToken
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Login failed', error: err });
         }
     };
 }

@@ -14,7 +14,7 @@ const userController = new UserController();
  *       200:
  *         description: A list of users
  */
-router.get('/users', userController.getAllUsers);
+router.get('/', userController.getAllUsers);
 
 /**
  * @swagger
@@ -53,7 +53,7 @@ router.get('/users/:id', userController.getUserById);
  *       201:
  *         description: User created successfully
  */
-router.post('/users', userController.createUser);
+router.post('/', userController.createUser);
 
 /**
  * @swagger
@@ -230,4 +230,67 @@ router.get('/profile/:id', userController.getUserProfile);
  *         description: Error updating user location
  */
 router.put('/:userId/location', userController.updateUserLocation);
+
+/**
+ * @swagger
+ * /users/login:
+ *   post:
+ *     summary: User login
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - identifier
+ *               - password
+ *             properties:
+ *               identifier:
+ *                 type: string
+ *                 description: Email, username, or phone number
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login successful
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *       401:
+ *         description: Invalid credentials or authentication record not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Invalid credentials
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Login failed
+ *                 error:
+ *                   type: string
+ */
+router.post('/login', userController.login);
 export default router;

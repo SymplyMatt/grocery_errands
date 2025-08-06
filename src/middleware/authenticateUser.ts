@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { AuthRequest } from './authenticateToken';
 
-const authenticatecontractor = (req: AuthRequest, res: Response, next: NextFunction) => {
+const authenticateUser = (req: AuthRequest, res: Response, next: NextFunction) => {
   const user_role = req.role || '';
   try {
-      if (user_role !== 'contractor') {
+      if (user_role !== 'admin') {
         return res.sendStatus(401);
       }
     next();
@@ -13,4 +13,4 @@ const authenticatecontractor = (req: AuthRequest, res: Response, next: NextFunct
   }
 };
 
-export default authenticatecontractor;
+export default authenticateUser;

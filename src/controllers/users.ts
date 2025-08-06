@@ -297,10 +297,15 @@ export class UserController {
             }
             const jwtSecret = process.env.JWT_SECRET as string;
             const accessToken = jwt.sign(
-                { user: user._id, email: user.email, username: user.username,locationId: user.locationId,type: 'user' },
+                { user: user._id, email: user.email, username: user.username,role: 'user', phone: user.phone },
                 jwtSecret,
                 { expiresIn: '7d' }
             );
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
             res.status(200).json({
                 message: 'Login successful',
                 user,

@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import ApiKey, { IApiKey } from '../models/auth/APiKey';
+import ApiKey, { IApiKey } from '../models/auth/ApiKey';
 import { AuthRequest } from './authenticateToken';
 import KeysController from '../controllers/apikey';
 export const authenticateApiKey = async (req: AuthRequest, res: Response, next: NextFunction) => {

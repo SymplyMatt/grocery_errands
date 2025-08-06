@@ -4,7 +4,7 @@ import { AuthRequest } from './authenticateToken';
 const authenticateUser = (req: AuthRequest, res: Response, next: NextFunction) => {
   const user_role = req.role || '';
   try {
-      if (user_role !== 'admin') {
+      if (user_role !== 'user') {
         return res.sendStatus(401);
       }
     next();

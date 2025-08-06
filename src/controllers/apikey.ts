@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import ApiKey, { IApiKey } from '../models/auth/APiKey';
+import ApiKey, { IApiKey } from '../models/auth/ApiKey';
 
 class KeysController {
     public static async createKey(req: Request, res: Response) {

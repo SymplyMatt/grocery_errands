@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 
 export interface AuthRequest extends Request {
-  user?: string; 
+  user?: Types.ObjectId; 
   email?: string;
   phone?: string;
   username?: string | null;

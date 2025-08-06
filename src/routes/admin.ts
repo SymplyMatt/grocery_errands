@@ -10,17 +10,20 @@ const adminController = new AdminController();
  *   get:
  *     summary: Get all admins
  *     tags: [Admins]
- *     security:
- *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of items per page
  *     responses:
  *       200:
- *         description: A list of Admins
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *       500:
- *         description: Failed to fetch Admins
+ *         description: A list of admins
  */
 router.get('/', adminController.getAllAdmins);
 
@@ -28,26 +31,20 @@ router.get('/', adminController.getAllAdmins);
  * @swagger
  * /admins/{id}:
  *   get:
- *     summary: Get admins by ID
+ *     summary: Get admin by ID
  *     tags: [Admins]
- *     security:
- *       - ApiKeyAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The admins ID
+ *         description: Admin ID
  *     responses:
  *       200:
  *         description: Admin found
- *         content:
- *           application/json:
  *       404:
  *         description: Admin not found
- *       500:
- *         description: Error fetching admin
  */
 router.get('/:id', adminController.getAdminById);
 
@@ -55,10 +52,8 @@ router.get('/:id', adminController.getAdminById);
  * @swagger
  * /admins:
  *   post:
- *     summary: Create a new Admin
+ *     summary: Create a new admin
  *     tags: [Admins]
- *     security:
- *       - ApiKeyAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -66,10 +61,8 @@ router.get('/:id', adminController.getAdminById);
  *     responses:
  *       201:
  *         description: Admin created successfully
- *         content:
- *           application/json:
- *       500:
- *         description: Error creating Admin
+ *       409:
+ *         description: Email, username, or phone already exists
  */
 router.post('/', adminController.createAdmin);
 
@@ -77,17 +70,15 @@ router.post('/', adminController.createAdmin);
  * @swagger
  * /admins/{id}:
  *   put:
- *     summary: Update a Admin by ID
+ *     summary: Update an admin
  *     tags: [Admins]
- *     security:
- *       - ApiKeyAuth: []
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
- *         description: The Admin ID
+ *         description: Admin ID
  *     requestBody:
  *       required: true
  *       content:
@@ -95,13 +86,66 @@ router.post('/', adminController.createAdmin);
  *     responses:
  *       200:
  *         description: Admin updated successfully
- *         content:
- *           application/json:
  *       404:
  *         description: Admin not found
- *       500:
- *         description: Error updating Admin
+ *       409:
+ *         description: Email, username, or phone already exists
  */
 router.put('/:id', adminController.updateAdmin);
+
+/**
+ * @swagger
+ * /admins/{id}/password:
+ *   put:
+ *     summary: Update admin password
+ *     tags: [Admins]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *               newPassword:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       401:
+ *         description: Current password is incorrect
+ *       404:
+ *         description: Admin not found
+ */
+router.put('/:id/password', adminController.updateAdminPassword);
+
+/**
+ * @swagger
+ * /admins/{id}:
+ *   delete:
+ *     summary: Soft delete an admin
+ *     tags: [Admins]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin ID
+ *     responses:
+ *       200:
+ *         description: Admin deleted successfully
+ *       404:
+ *         description: Admin not found
+ */
+router.delete('/:id', adminController.deleteAdmin);
 
 export default router;

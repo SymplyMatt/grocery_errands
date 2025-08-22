@@ -37,6 +37,30 @@ router.get('/', categoryController.getAllCategories);
 
 /**
  * @swagger
+ * /categories/withproducts:
+ *   get:
+ *     summary: Get all categories with their products
+ *     tags: [Categories] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *     responses:
+ *       200:
+ *         description: List of categories
+ *       500:
+ *         description: Failed to fetch categories
+ */
+router.get('/withproducts', categoryController.getCategoriesWithProducts);
+
+/**
+ * @swagger
  * /categories/{id}:
  *   get:
  *     summary: Get a category by ID

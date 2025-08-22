@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
-app.use(rateLimiter);
+// app.use(rateLimiter);
 app.set('x-powered-by', false);
 app.use(cookieParser());
 

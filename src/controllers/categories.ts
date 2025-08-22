@@ -12,7 +12,16 @@ export class CategoryController {
 
     public getAllCategories = async (req: Request, res: Response): Promise<void> => {
         try {
-            const categories = await this.categoryRepository.find({}, { populate: [ { path:'productCategories', populate: {path: "product", populate: "productOptions"} }, { path: 'locationCategories', populate: "location" }] });
+            const categories = await this.categoryRepository.find({}, { limit: 1000 });
+            res.status(200).json(categories);
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch categories', error: err });
+        }
+    };
+
+    public getCategoriesWithProducts = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const categories = await this.categoryRepository.find({}, { populate: [ { path:'productCategories', populate: {path: "product", populate: "productOptions"} } ] });
             res.status(200).json(categories);
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch categories', error: err });

@@ -38,8 +38,8 @@ export class CartController {
                 res.status(401).json({ error: 'Product not found' });
                 return;
             }
-            const productOption = await this.productOptionRepository.findOne({ _id: productOptionId, productId: productId });
-            if (!productOption) {
+            const productOption = await this.productOptionRepository.findById(productOptionId);
+            if (!productOption || productOption.productId.toString() !== productId) {
                 res.status(401).json({ 
                     error: 'Product option not found or does not belong to this product' 
                 });
@@ -48,11 +48,11 @@ export class CartController {
             const existingCartItem = await this.cartRepository.findOne({ userId, productOptionId });
             let cartItem: ICart;
             if (existingCartItem) {
-                cartItem = await this.cartRepository.updateById(existingCartItem._id.toString(),{ $inc: { quantity } },{ new: true } ) as ICart;
+                cartItem = await this.cartRepository.updateById(existingCartItem.id.toString(),{ $inc: { quantity } },{ new: true } ) as ICart;
             } else {
                 cartItem = await this.cartRepository.create({ userId, productId, productOptionId, quantity });
             }
-            const populatedCartItem = await this.cartRepository.findById( cartItem._id.toString(), { populate: this.populationOptions } );
+            const populatedCartItem = await this.cartRepository.findById( cartItem._id.toString() );
             res.status(201).json({
                 message: existingCartItem ? 'Cart item updated successfully' : 'Item added to cart successfully',
                 cartItem: populatedCartItem

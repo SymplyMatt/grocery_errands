@@ -28,7 +28,7 @@ const userSchema = new Schema<IUser>({
   locationId: {
     type: Schema.Types.ObjectId,
     ref: 'Location',
-    required: true
+    default: null
   },
   username: {
     type: String,

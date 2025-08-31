@@ -67,7 +67,7 @@ export interface IUser extends Document, ITimestamps, ISoftDelete {
   email: string;
   phone: string;
   whatsapp?: string | null;
-  locationId: Types.ObjectId;
+  locationId: Types.ObjectId | null;
   username: string;
   verified: boolean;
   

@@ -12,7 +12,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url:  process.env.NODE_ENV === 'production' ? process.env.PROD_URL : `http://localhost:${process.env.PORT}`,
+      url:  process.env.NODE_ENV === 'production' ? "https://grocery-errands.onrender.com" : `http://localhost:${process.env.PORT}`,
       description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
     },
   ],

@@ -89,7 +89,41 @@ router.get('/users/:id', userController.getUserById);
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             properties:
+ *               firstname:
+ *                 type: string
+ *                 example: John
+ *               lastname:
+ *                 type: string
+ *                 example: Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: johndoe@example.com
+ *               phone:
+ *                 type: string
+ *                 example: "+2348012345678"
+ *               whatsapp:
+ *                 type: string
+ *                 example: "+2348098765432"
+ *               locationId:
+ *                 type: string
+ *                 example: "64c9f12a8a9b9a001f3a1234"
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 example: "Password123!!!"
+ *             required:
+ *               - firstname
+ *               - lastname
+ *               - email
+ *               - phone
+ *               - username
+ *               - password
  *     responses:
  *       201:
  *         description: User created successfully
@@ -232,7 +266,7 @@ router.get('/location/:locationId', userController.getUsersByLocation);
  * /users/search:
  *   get:
  *     summary: Search users
- *     tags: [Users] 
+ *     tags: [Auth] 
  *     security:
  *       - bearerAuth: []
  *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
@@ -279,7 +313,7 @@ router.get('/search', userController.searchUsers);
  * /users/profile/{id}:
  *   get:
  *     summary: Get user profile
- *     tags: [Users] 
+ *     tags: [Auth] 
  *     security:
  *       - bearerAuth: []
  *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
@@ -418,5 +452,89 @@ router.put('/:userId/location', userController.updateUserLocation);
  *                   type: string
  */
 router.post('/login', userController.login);
+
+/**
+ * @swagger
+ * /users/verify:
+ *   post:
+ *     summary: Verify a user's account with a verification code
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "68b45662e5bf6e27781e63d0"
+ *               code:
+ *                 type: string
+ *                 example: "123456"
+ *             required:
+ *               - userId
+ *               - code
+ *     responses:
+ *       200:
+ *         description: User verified successfully
+ *       400:
+ *         description: Invalid request or verification code
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.post('/verify', userController.verifyUser);
+
+/**
+ * @swagger
+ * /users/resend-verification:
+ *   post:
+ *     summary: Resend a verification code to the user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "68b45662e5bf6e27781e63d0"
+ *             required:
+ *               - userId
+ *     responses:
+ *       200:
+ *         description: Verification code resent successfully
+ *       400:
+ *         description: Invalid request (missing userId or already verified)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.post('/resend-verification', userController.resendVerificationCode);
 
 export default router;

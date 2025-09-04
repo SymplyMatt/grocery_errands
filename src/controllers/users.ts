@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { BaseRepository } from '../models/base';
-import { IUser, User, ILocation, Location, UserAuth } from '../models';
+import { IUser, User, ILocation, Location, UserAuth, VerificationCode } from '../models';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 export class UserController {
@@ -47,7 +47,8 @@ export class UserController {
 
     public createUser = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { firstname, lastname, email, phone, whatsapp, locationId, username, password } = req.body;
+            const { firstname, lastname, email, phone, whatsapp, locationId, password } = req.body;
+            let username = email.split('@')[0];
             const existingEmailUser = await this.userRepository.findOne({  email: email.toLowerCase(), deletedAt: null });
             if (existingEmailUser) {
                 res.status(409).json({ message: 'Email already exists' });
@@ -60,16 +61,10 @@ export class UserController {
             }
             const existingUsernameUser = await this.userRepository.findOne({ 
                 username,
-                deletedAt: null 
+                deletedAt: null
             });
             if (existingUsernameUser) {
-                res.status(409).json({ message: 'Username already exists' });
-                return;
-            }
-            const location = await this.locationRepository.findById(locationId);
-            if (!location) {
-                res.status(400).json({ message: 'Invalid location ID' });
-                return;
+                username = `${username}${Math.floor(1000 + Math.random() * 9000)}`;
             }
             const saltRounds = 12;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -77,22 +72,25 @@ export class UserController {
             const user = await this.userRepository.create(userData);
             const userAuthData = { userId: user._id,password: hashedPassword };
             await UserAuth.create(userAuthData);
-            const jwtSecret = process.env.JWT_SECRET as string;
-            const accessToken = jwt.sign(
-                { user: user._id, email: user.email, username: user.username,role: 'user', phone: user.phone },
-                jwtSecret,
-                { expiresIn: '7d' }
+            await VerificationCode.updateMany(
+                { userId: user.id, isUsed: false },
+                { isUsed: true }
             );
-            res.cookie('token', accessToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                maxAge: 7 * 24 * 60 * 60 * 1000
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiresIn = new Date(Date.now() + 15 * 60 * 1000);
+            const hashedCode = await bcrypt.hash(verificationCode, saltRounds);
+            await VerificationCode.create({
+                userId: user._id,
+                code: hashedCode,
+                expiresIn,
+                isUsed: false
             });
             res.status(201).json({ 
-                message: 'User created successfully', 
-                user: user 
+                message: 'User created successfully',
+                verificationCode 
             });
         } catch (err) {
+            console.error(err);
             res.status(500).json({ message: 'Error creating user', error: err });
         }
     };
@@ -277,7 +275,7 @@ export class UserController {
         }
     };
 
-    public login = async (req: Request, res: Response): Promise<void> => {
+    public login = async (req: Request, res: Response) => {
         try {
             const { identifier, password } = req.body;
             const user = await this.userRepository.findOne({
@@ -306,6 +304,27 @@ export class UserController {
                 });
                 return;
             }
+            if(!user.verified){
+                const saltRounds = 12;
+                await VerificationCode.updateMany(
+                    { userId: user.id, isUsed: false },
+                    { isUsed: true }
+                );
+                const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+                const expiresIn = new Date(Date.now() + 15 * 60 * 1000);
+                const hashedCode = await bcrypt.hash(verificationCode, saltRounds);
+                await VerificationCode.create({
+                    userId: user._id,
+                    code: hashedCode,
+                    expiresIn,
+                    isUsed: false
+                });
+                return res.status(409).json({
+                    message: 'Verification required',
+                    verificationCode,
+                    email: user.email 
+                });
+            }
             const jwtSecret = process.env.JWT_SECRET as string;
             const accessToken = jwt.sign(
                 { user: user._id, email: user.email, username: user.username,role: 'user', phone: user.phone },
@@ -324,6 +343,107 @@ export class UserController {
             });
         } catch (err) {
             res.status(500).json({ message: 'Login failed', error: err });
+        }
+    };
+
+    public verifyUser = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email, code } = req.body;
+            if (!email || !code) {
+                res.status(400).json({ message: 'email and verification code are required' });
+                return;
+            }
+            const user = await this.userRepository.findOne({ email: email.toLowerCase() });
+            if (!user || user.deletedAt) {
+                res.status(404).json({ message: 'User not found' });
+                return;
+            }
+            if (user.verified) {
+                res.status(400).json({ message: 'User is already verified' });
+                return;
+            }
+            const verificationRecord = await VerificationCode.findOne({
+                userId: user._id,
+                isUsed: false
+            });
+            if (!verificationRecord) {
+                res.status(400).json({ message: 'Invalid verification code' });
+                return;
+            }
+            const isCodeValid = await bcrypt.compare(code, verificationRecord?.code || '');
+            if (!isCodeValid || (new Date() > verificationRecord.expiresIn) || verificationRecord.isUsed) {
+                res.status(400).json({ message: 'Invalid verification code' });
+                return;
+            }
+            await VerificationCode.findByIdAndUpdate(verificationRecord._id, {
+                isUsed: true
+            });
+            await this.userRepository.updateById(user.id, {
+                verified: true,
+                updatedAt: new Date()
+            });
+            const populatedUser = await this.userRepository.findById(user.id, {
+                populate: ['location','deliveryAddresses','notifications']
+            });
+            const jwtSecret = process.env.JWT_SECRET as string;
+            const accessToken = jwt.sign(
+                { user: user._id, email: user.email, username: user.username,role: 'user', phone: user.phone },
+                jwtSecret,
+                { expiresIn: '7d' }
+            );
+            res.cookie('token', accessToken, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            });
+            res.status(200).json({
+                message: 'User verified successfully',
+                user: populatedUser,
+                accessToken
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Error verifying user', error: err });
+        }
+    };
+
+    public resendVerificationCode = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body;
+            if (!email) {
+                res.status(400).json({ message: 'email is required' });
+                return;
+            }
+            const user = await this.userRepository.findOne({ email: email.toLowerCase() });
+            if (!user || user.deletedAt) {
+                res.status(404).json({ message: 'User not found' });
+                return;
+            }
+            if (user.verified) {
+                res.status(400).json({ message: 'User is already verified' });
+                return;
+            }
+            await VerificationCode.updateMany(
+                { userId: user.id, isUsed: false },
+                { isUsed: true }
+            );
+            const saltRounds = 12;
+            const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            const expiresIn = new Date(Date.now() + 15 * 60 * 1000);
+            const hashedCode = await bcrypt.hash(verificationCode, saltRounds);
+            await VerificationCode.create({
+                userId: user._id,
+                code: hashedCode,
+                expiresIn,
+                isUsed: false
+            });
+            res.status(200).json({
+                message: 'Verification code resent successfully',
+                verificationCode
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Error resending verification code', error: err });
         }
     };
 }

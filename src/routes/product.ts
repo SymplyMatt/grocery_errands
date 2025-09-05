@@ -90,6 +90,116 @@ router.get('/:id', productcontroller.getProductById);
 
 /**
  * @swagger
+ * /products/{productId}/related:
+ *   get:
+ *     summary: Get related products by product ID
+ *     description: Retrieves products that share categories with the specified product
+ *     tags: [Products] 
+ *     security:
+ *       - bearerAuth: []
+ *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
+ *     parameters:
+ *       - in: header
+ *         name: x-api-key
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: path
+ *         name: productId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The product ID to find related products for
+ *       - in: query
+ *         name: limit
+ *         required: false
+ *         schema:
+ *           type: integer
+ *           minimum: 1
+ *           maximum: 50
+ *           default: 5
+ *         description: Maximum number of related products to return
+ *     responses:
+ *       200:
+ *         description: Related products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Related products retrieved successfully"
+ *                 totalFound:
+ *                   type: integer
+ *                   description: Total number of related products found
+ *                   example: 12
+ *                 returned:
+ *                   type: integer
+ *                   description: Number of products returned in this response
+ *                   example: 5
+ *                 relatedProducts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       _id:
+ *                         type: string
+ *                         example: "507f1f77bcf86cd799439011"
+ *                       name:
+ *                         type: string
+ *                         example: "Related Product Name"
+ *                       description:
+ *                         type: string
+ *                         example: "Product description"
+ *                       image:
+ *                         type: string
+ *                         example: "https://example.com/image.jpg"
+ *                       productOptions:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                       productContents:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                       productCategories:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *                       locationProducts:
+ *                         type: array
+ *                         items:
+ *                           type: object
+ *       404:
+ *         description: Product not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Product not found"
+ *       500:
+ *         description: Error fetching related products
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Error fetching related products"
+ *                 error:
+ *                   type: object
+ *                   description: Detailed error information
+ */
+router.get('/:productId/related', productcontroller.getRelatedProducts);
+
+/**
+ * @swagger
  * /products/location/{locationId}:
  *   get:
  *     summary: Get all products by location

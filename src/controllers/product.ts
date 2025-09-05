@@ -281,4 +281,42 @@ export class ProductController {
       res.status(500).json({ message: 'Error deleting product option', error: err });
     }
   };
+
+  public getRelatedProducts = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { productId } = req.params;
+      const { limit = 10 } = req.query;
+      const product = await this.productRepository.findById(productId);
+      if (!product) {
+        res.status(404).json({ message: 'Product not found' });
+        return;
+      }
+      const productCategories = await ProductCategory.find({ productId }).select('categoryId');
+      
+      if (productCategories.length === 0) {
+        res.status(200).json({ message: 'No related products found', relatedProducts: [] });
+        return;
+      }
+      const categoryIds = productCategories.map(pc => pc.categoryId);
+      const relatedProductCategories = await ProductCategory.find({
+        categoryId: { $in: categoryIds },
+        productId: { $ne: productId }
+      }).select('productId');
+      if (relatedProductCategories.length === 0) {
+        res.status(200).json({ message: 'No related products found', relatedProducts: [] });
+        return;
+      }
+      const relatedProductIds = [...new Set(relatedProductCategories.map(rpc => rpc.productId))];
+      const relatedProducts = await this.productRepository.find(
+        { _id: { $in: relatedProductIds.slice(0, Number(limit)) } },
+        { populate: this.populationOptions }
+      );
+      res.status(200).json({
+        message: 'Related products retrieved successfully',
+        products: relatedProducts
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching related products', error: err });
+    }
+};
 }

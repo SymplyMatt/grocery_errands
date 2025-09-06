@@ -318,5 +318,5 @@ export class ProductController {
     } catch (err) {
       res.status(500).json({ message: 'Error fetching related products', error: err });
     }
-};
+  };
 }

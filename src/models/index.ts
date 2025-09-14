@@ -14,6 +14,7 @@ export { ProductContent } from './product/ProductContent';
 export { VerificationCode } from './auth/VerificationCode';
 export { UserTopUp } from './users/UserTopUp';
 export { Order } from './order/Order';
+export { Payment } from './order/Payment';
 export { OrderProduct } from './order/OrderProduct';
 export { Notification } from './users/Notification';
 export { DeliveryAddress } from './users/DeliveryAddress';

@@ -105,6 +105,12 @@ userSchema.virtual('deliveryAddresses', {
   foreignField: 'userId'
 });
 
+userSchema.virtual('payments', {
+  ref: 'Payment',
+  localField: '_id',
+  foreignField: 'userId'
+});
+
 userSchema.statics.findNotDeleted = function() {
   return this.where({ deletedAt: null });
 };

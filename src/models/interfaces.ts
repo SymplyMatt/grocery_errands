@@ -190,15 +190,19 @@ export interface IUserTopUp extends Document, ITimestamps, ISoftDelete, IAuditFi
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
 export type PaymentMethod = 'TOPUP' | 'PAYSTACK';
 
-export interface IOrder extends Document, ITimestamps, ISoftDelete, IAuditFields {
+export interface IOrder extends Document, ITimestamps {
   _id: Types.ObjectId;
-  orderNumber: string;
   userId: Types.ObjectId;
   status: OrderStatus;
   total: number;
   delivery: number;
+  address: string;
+  state: string;
+  email: string;
+  phone: string;
+  firstname: string;
+  lastname: string;
   paymentMethod: PaymentMethod;
-  meta: Record<string, any>;
 
   user?: IUser;
   orderProducts?: IOrderProduct[];
@@ -279,4 +283,22 @@ export interface ICartWithDetails extends ICart {
   product: IProduct;
   productOption: IProductOption;
   user: IUser;
+}
+
+export type PaymentStatus = 'PENDING' | 'SUCCESS' | 'FAILED' | 'CANCELLED' | 'REFUNDED';
+export type PaymentGateway = 'PAYSTACK';
+export interface IPayment extends Document, ITimestamps {
+  _id: Types.ObjectId;
+  orderId: Types.ObjectId;
+  userId: Types.ObjectId;
+  email: string;
+  link: string;
+  status: PaymentStatus;
+  gateway: PaymentGateway;
+  amount: number;
+  reference?: string;
+  meta?: Record<string, any>;
+
+  order?: IOrder;
+  user?: IUser;
 }

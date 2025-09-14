@@ -7,6 +7,7 @@ import categories from './categories';
 import users from './users';
 import cart from './cart';
 import apikey from './apikey';
+import orders from './orders';
 
 const router = Router();
 
@@ -17,6 +18,7 @@ router.use('/users', users);
 router.use('/products', product);
 router.use('/locations', location);
 router.use('/keys', apikey);
+router.use('/orders', orders);
 router.use('/', swagger);
 
 export default router;

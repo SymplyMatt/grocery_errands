@@ -219,7 +219,7 @@ export class AdminController {
                 res.status(401).json({ message: 'Invalid credentials' });
                 return;
             }
-            const userAuth = await AdminAuth.findOne({ userId: user._id });
+            const userAuth = await AdminAuth.findOne({ adminId: user._id });
             if (!userAuth) {
                 res.status(401).json({ message: 'Authentication record not found' });
                 return;

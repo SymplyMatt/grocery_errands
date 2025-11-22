@@ -43,26 +43,6 @@ export class OrderController {
             const userId = (req as AuthRequest).user;
             const { products = [], address, state, email, phone, firstname, lastname } = req.body;
             const delivery = 0;
-            if (!address || !state) {
-                res.status(400).json({ message: 'Address and state are required' });
-                return;
-            }
-            if (products.length < 1) {
-                res.status(400).json({ message: 'Products are required' });
-                return;
-            }
-            for (const product of products) {
-                if (!product.productId || !product.productOptionId || !product.quantity) {
-                    res.status(400).json({ 
-                        message: 'Each product must have productId, productOptionId, and quantity' 
-                    });
-                    return;
-                }
-                if (product.quantity <= 0) {
-                    res.status(400).json({ message: 'Product quantity must be greater than 0' });
-                    return;
-                }
-            }
             const productOptionIds = products.map((p: any) => p.productOptionId);
             const productOptions = await ProductOption.find({
                 _id: { $in: productOptionIds }
@@ -225,14 +205,6 @@ export class OrderController {
         try {
             const { id } = req.params;
             const { status } = req.body;
-            const validStatuses = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
-            if (!validStatuses.includes(status)) {
-                res.status(400).json({ 
-                    message: 'Invalid status', 
-                    validStatuses 
-                });
-                return;
-            }
             const order = await this.orderRepository.updateById(id, 
                 { status, updatedAt: new Date() },
                 { new: true }

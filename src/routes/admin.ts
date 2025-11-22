@@ -2,6 +2,8 @@ import express from 'express';
 import { AdminController } from '../controllers/admins';
 import authenticateAdmin from '../middleware/authenticateAdmin';
 import authenticateToken from '../middleware/authenticateToken';
+import validate from '../middleware/validate';
+import * as adminValidators from '../validators/admin';
 
 const router = express.Router();
 const adminController = new AdminController();
@@ -38,7 +40,9 @@ const adminController = new AdminController();
  */
 router.get('/',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    adminValidators.getAllAdminsValidator,
+    validate,
     adminController.getAllAdmins
 );
 
@@ -70,9 +74,11 @@ router.get('/',
  *       404:
  *         description: Admin not found
  */
-router.get('/:id', 
+router.get('/:id',
     authenticateToken,
     authenticateAdmin,
+    adminValidators.getAdminByIdValidator,
+    validate,
     adminController.getAdminById
 );
 
@@ -136,7 +142,9 @@ router.get('/:id',
  */
 router.post('/',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    adminValidators.createAdminValidator,
+    validate,
     adminController.createAdmin
 );
 
@@ -174,9 +182,11 @@ router.post('/',
  *       409:
  *         description: Email, username, or phone already exists
  */
-router.put('/:id', 
+router.put('/:id',
     authenticateToken,
     authenticateAdmin,
+    adminValidators.updateAdminValidator,
+    validate,
     adminController.updateAdmin
 );
 
@@ -223,7 +233,9 @@ router.put('/:id',
  */
 router.put('/:id/password',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    adminValidators.updateAdminPasswordValidator,
+    validate,
     adminController.updateAdminPassword
 );
 
@@ -257,7 +269,9 @@ router.put('/:id/password',
  */
 router.delete('/:id',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    adminValidators.deleteAdminValidator,
+    validate,
     adminController.deleteAdmin
 );
 
@@ -332,7 +346,9 @@ router.delete('/:id',
  *                 error:
  *                   type: string
  */
-router.post('/login', 
+router.post('/login',
+    adminValidators.adminLoginValidator,
+    validate,
     adminController.login
 );
 

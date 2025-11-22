@@ -197,11 +197,6 @@ export class UserController {
     public searchUsers = async (req: Request, res: Response): Promise<void> => {
         try {
             const { q, locationId, page = 1, limit = 10 } = req.query;
-
-            if (!q) {
-                res.status(400).json({ message: 'Search query is required' });
-                return;
-            }
             let filter: any = {
                 deletedAt: null,
                 $or: [
@@ -349,10 +344,6 @@ export class UserController {
     public verifyUser = async (req: Request, res: Response): Promise<void> => {
         try {
             const { email, code } = req.body;
-            if (!email || !code) {
-                res.status(400).json({ message: 'email and verification code are required' });
-                return;
-            }
             const user = await this.userRepository.findOne({ email: email.toLowerCase() });
             if (!user || user.deletedAt) {
                 res.status(404).json({ message: 'User not found' });
@@ -410,10 +401,6 @@ export class UserController {
     public resendVerificationCode = async (req: Request, res: Response): Promise<void> => {
         try {
             const { email } = req.body;
-            if (!email) {
-                res.status(400).json({ message: 'email is required' });
-                return;
-            }
             const user = await this.userRepository.findOne({ email: email.toLowerCase() });
             if (!user || user.deletedAt) {
                 res.status(404).json({ message: 'User not found' });

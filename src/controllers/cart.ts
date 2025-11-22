@@ -111,10 +111,6 @@ export class CartController {
     public clearCart = async (req: Request, res: Response): Promise<void> => {
         try {
             const userId = (req as AuthRequest).user;
-            if (!userId) {
-                res.status(401).json({ error: 'User not authenticated' });
-                return;
-            }
             await Cart.deleteMany({ userId });
             res.status(200).json({
                 message: 'Cart cleared successfully'

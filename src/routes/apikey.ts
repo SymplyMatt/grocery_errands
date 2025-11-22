@@ -1,8 +1,9 @@
 import express from 'express';
-import { body, validationResult } from 'express-validator';
 import authenticateToken from '../middleware/authenticateToken';
 import authenticateAdmin from '../middleware/authenticateAdmin';
 import KeysController from '../controllers/apikey';
+import validate from '../middleware/validate';
+import * as apiKeyValidators from '../validators/apikey';
 
 const router = express.Router();
 
@@ -72,10 +73,11 @@ const router = express.Router();
  *       500:
  *         description: Internal Server Error
  */
-router.post('/add', 
+router.post('/add',
     authenticateToken,
     authenticateAdmin,
-    body('owner').notEmpty().withMessage('Owner is required'),
+    apiKeyValidators.createApiKeyValidator,
+    validate,
     KeysController.createKey
 );
 
@@ -113,9 +115,11 @@ router.post('/add',
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:id', 
+router.delete('/:id',
     authenticateToken,
     authenticateAdmin,
+    apiKeyValidators.deleteApiKeyValidator,
+    validate,
     KeysController.deleteKey
 );
 
@@ -173,9 +177,11 @@ router.delete('/:id',
  *       500:
  *         description: Internal Server Error
  */
-router.get('/:id', 
+router.get('/:id',
     authenticateToken,
     authenticateAdmin,
+    apiKeyValidators.getApiKeyValidator,
+    validate,
     KeysController.getKey
 );
 
@@ -276,9 +282,11 @@ router.get('/',
  *       500:
  *         description: Internal Server Error
  */
-router.patch('/:id/usage', 
+router.patch('/:id/usage',
     authenticateToken,
     authenticateAdmin,
+    apiKeyValidators.updateUsageCountValidator,
+    validate,
     KeysController.updateUsageCount
 );
 

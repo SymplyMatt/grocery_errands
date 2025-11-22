@@ -1,8 +1,9 @@
 import express from 'express';
-import { body, param } from 'express-validator';
 import { CartController } from '../controllers/cart';
 import authenticateToken from '../middleware/authenticateToken';
 import authenticateUser from '../middleware/authenticateUser';
+import validate from '../middleware/validate';
+import * as cartValidators from '../validators/cart';
 
 const router = express.Router();
 const cartController = new CartController();
@@ -75,9 +76,8 @@ const cartController = new CartController();
 router.post('/',
   authenticateToken,
   authenticateUser,
-  body('productId').notEmpty().withMessage('Product ID is required'),
-  body('productOptionId').notEmpty().withMessage('Product Option ID is required'),
-  body('quantity').optional().isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+  cartValidators.addToCartValidator,
+  validate,
   cartController.addToCart
 );
 
@@ -146,6 +146,8 @@ router.post('/',
 router.get('/',
   authenticateToken,
   authenticateUser,
+  cartValidators.getUserCartValidator,
+  validate,
   cartController.getUserCart
 );
 
@@ -185,7 +187,8 @@ router.get('/',
 router.get('/:cartItemId',
   authenticateToken,
   authenticateUser,
-  param('cartItemId').isMongoId().withMessage('Invalid cart item ID'),
+  cartValidators.getCartItemValidator,
+  validate,
   cartController.getCartItem
 );
 
@@ -239,8 +242,8 @@ router.get('/:cartItemId',
 router.put('/:cartItemId',
   authenticateToken,
   authenticateUser,
-  param('cartItemId').isMongoId().withMessage('Invalid cart item ID'),
-  body('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+  cartValidators.updateCartItemValidator,
+  validate,
   cartController.updateCartItem
 );
 
@@ -279,7 +282,8 @@ router.put('/:cartItemId',
 router.delete('/:cartItemId',
   authenticateToken,
   authenticateUser,
-  param('cartItemId').isMongoId().withMessage('Invalid cart item ID'),
+  cartValidators.removeFromCartValidator,
+  validate,
   cartController.removeFromCart
 );
 

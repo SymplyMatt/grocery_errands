@@ -2,6 +2,8 @@ import express from 'express';
 import { LocationController } from '../controllers/location';
 import authenticateToken from '../middleware/authenticateToken';
 import authenticateAdmin from '../middleware/authenticateAdmin';
+import validate from '../middleware/validate';
+import * as locationValidators from '../validators/location';
 
 const router = express.Router();
 const locationController = new LocationController();
@@ -66,7 +68,7 @@ router.get('/', locationController.getAllLocations);
  *       500:
  *         description: Error fetching location
  */
-router.get('/:id', locationController.getLocationById);
+router.get('/:id', locationValidators.getLocationByIdValidator, validate, locationController.getLocationById);
 
 /**
  * @swagger
@@ -105,7 +107,7 @@ router.get('/:id', locationController.getLocationById);
  *       500:
  *         description: Error fetching categories
  */
-router.get('/:locationId/categories', locationController.getLocationCategories);
+router.get('/:locationId/categories', locationValidators.getLocationCategoriesValidator, validate, locationController.getLocationCategories);
 
 /**
  * @swagger
@@ -146,7 +148,7 @@ router.get('/:locationId/categories', locationController.getLocationCategories);
  *       500:
  *         description: Error fetching products
  */
-router.get('/:locationId/products', locationController.getLocationProducts);
+router.get('/:locationId/products', locationValidators.getLocationProductsValidator, validate, locationController.getLocationProducts);
 
 /**
  * @swagger
@@ -177,7 +179,7 @@ router.get('/:locationId/products', locationController.getLocationProducts);
  *       500:
  *         description: Error fetching statistics
  */
-router.get('/:locationId/stats', locationController.getLocationStats);
+router.get('/:locationId/stats', locationValidators.getLocationStatsValidator, validate, locationController.getLocationStats);
 
 /**
  * @swagger
@@ -213,9 +215,11 @@ router.get('/:locationId/stats', locationController.getLocationStats);
  *       500:
  *         description: Error creating location
  */
-router.post('/', 
+router.post('/',
     authenticateToken,
     authenticateAdmin,
+    locationValidators.createLocationValidator,
+    validate,
     locationController.createLocation
 );
 
@@ -258,9 +262,11 @@ router.post('/',
  *       500:
  *         description: Error updating location
  */
-router.put('/:id', 
+router.put('/:id',
     authenticateToken,
     authenticateAdmin,
+    locationValidators.updateLocationValidator,
+    validate,
     locationController.updateLocation
 );
 
@@ -295,9 +301,11 @@ router.put('/:id',
  *       500:
  *         description: Error deleting location
  */
-router.delete('/:id', 
+router.delete('/:id',
     authenticateToken,
     authenticateAdmin,
+    locationValidators.deleteLocationValidator,
+    validate,
     locationController.deleteLocation
 );
 

@@ -3,6 +3,8 @@ import { ProductController } from '../controllers/product';
 import { LocationProductController } from '../controllers/locationProduct';
 import authenticateToken from '../middleware/authenticateToken';
 import authenticateAdmin from '../middleware/authenticateAdmin';
+import validate from '../middleware/validate';
+import * as productValidators from '../validators/product';
 
 const router = express.Router();
 const productcontroller = new ProductController();
@@ -86,7 +88,7 @@ router.get('/', productcontroller.getAllProducts);
  *       500:
  *         description: Error fetching product
  */
-router.get('/:id', productcontroller.getProductById);
+router.get('/:id', productValidators.getProductByIdValidator, validate, productcontroller.getProductById);
 
 /**
  * @swagger
@@ -196,7 +198,7 @@ router.get('/:id', productcontroller.getProductById);
  *                   type: object
  *                   description: Detailed error information
  */
-router.get('/:productId/related', productcontroller.getRelatedProducts);
+router.get('/:productId/related', productValidators.getRelatedProductsValidator, validate, productcontroller.getRelatedProducts);
 
 /**
  * @swagger
@@ -232,7 +234,7 @@ router.get('/:productId/related', productcontroller.getRelatedProducts);
  *       500:
  *         description: Error retrieving location products
  */
-router.get('/location/:locationId', locationproductController.getLocationWithProducts);
+router.get('/location/:locationId', productValidators.getLocationWithProductsValidator, validate, locationproductController.getLocationWithProducts);
 
 /**
  * @swagger
@@ -331,7 +333,9 @@ router.get('/location/:locationId', locationproductController.getLocationWithPro
  */
 router.post('/create',
     // authenticateToken,
-    // authenticateAdmin, 
+    // authenticateAdmin,
+    productValidators.createProductValidator,
+    validate,
     productcontroller.createProduct
 );
 
@@ -383,7 +387,9 @@ router.post('/create',
  */
 router.post('/products/:productId/options',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.addProductOptionValidator,
+    validate,
     productcontroller.addProductOption
 );
 
@@ -430,7 +436,9 @@ router.post('/products/:productId/options',
  */
 router.post('/products/:productId/locations',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.addProductLocationValidator,
+    validate,
     productcontroller.addProductLocation
 );
 
@@ -477,7 +485,9 @@ router.post('/products/:productId/locations',
  */
 router.post('/products/:productId/categories',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.addProductCategoryValidator,
+    validate,
     productcontroller.addProductCategory
 );
 
@@ -524,7 +534,9 @@ router.post('/products/:productId/categories',
  */
 router.put('/products/:id',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.updateProductValidator,
+    validate,
     productcontroller.updateProduct
 );
 
@@ -571,7 +583,9 @@ router.put('/products/:id',
  */
 router.put('/products/:productId/content',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.updateProductContentValidator,
+    validate,
     productcontroller.updateProductContent
 );
 
@@ -626,7 +640,9 @@ router.put('/products/:productId/content',
  */
 router.put('/products/:productId/options/:optionId',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.updateProductOptionValidator,
+    validate,
     productcontroller.updateProductOption
 );
 
@@ -661,7 +677,9 @@ router.put('/products/:productId/options/:optionId',
  */
 router.delete('/products/:id',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.deleteProductValidator,
+    validate,
     productcontroller.deleteProduct
 );
 
@@ -701,7 +719,9 @@ router.delete('/products/:id',
  */
 router.delete('/products/:productId/categories/:categoryId',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.removeProductCategoryValidator,
+    validate,
     productcontroller.removeProductCategory
 );
 
@@ -741,7 +761,9 @@ router.delete('/products/:productId/categories/:categoryId',
  */
 router.delete('/products/:productId/options/:optionId',
     authenticateToken,
-    authenticateAdmin, 
+    authenticateAdmin,
+    productValidators.deleteProductOptionValidator,
+    validate,
     productcontroller.deleteProductOption
 );
 

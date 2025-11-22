@@ -1,5 +1,7 @@
 import express from 'express';
 import { CategoryController } from '../controllers/categories';
+import validate from '../middleware/validate';
+import * as categoryValidators from '../validators/categories';
 
 const router = express.Router();
 const categoryController = new CategoryController();
@@ -88,7 +90,7 @@ router.get('/withproducts', categoryController.getCategoriesWithProducts);
  *       500:
  *         description: Error fetching category
  */
-router.get('/:id', categoryController.getCategoryById);
+router.get('/:id', categoryValidators.getCategoryByIdValidator, validate, categoryController.getCategoryById);
 
 /**
  * @swagger
@@ -127,7 +129,7 @@ router.get('/:id', categoryController.getCategoryById);
  *       500:
  *         description: Error fetching products
  */
-router.get('/:categoryId/products', categoryController.getProductsInCategory);
+router.get('/:categoryId/products', categoryValidators.getProductsInCategoryValidator, validate, categoryController.getProductsInCategory);
 
 /**
  * @swagger
@@ -156,7 +158,7 @@ router.get('/:categoryId/products', categoryController.getProductsInCategory);
  *       500:
  *         description: Error fetching categories by location
  */
-router.get('/:locationId/categories', categoryController.getCategoriesByLocation);
+router.get('/:locationId/categories', categoryValidators.getCategoriesByLocationValidator, validate, categoryController.getCategoriesByLocation);
 
 /**
  * @swagger
@@ -197,7 +199,7 @@ router.get('/:locationId/categories', categoryController.getCategoriesByLocation
  *       500:
  *         description: Error creating category
  */
-router.post('/', categoryController.createCategory);
+router.post('/', categoryValidators.createCategoryValidator, validate, categoryController.createCategory);
 
 /**
  * @swagger
@@ -237,7 +239,7 @@ router.post('/', categoryController.createCategory);
  *       500:
  *         description: Error associating category
  */
-router.post('/locations', categoryController.addCategoryToLocation);
+router.post('/locations', categoryValidators.addCategoryToLocationValidator, validate, categoryController.addCategoryToLocation);
 
 /**
  * @swagger
@@ -278,7 +280,7 @@ router.post('/locations', categoryController.addCategoryToLocation);
  *       500:
  *         description: Error updating category
  */
-router.put('/:id', categoryController.updateCategory);
+router.put('/:id', categoryValidators.updateCategoryValidator, validate, categoryController.updateCategory);
 
 /**
  * @swagger
@@ -309,7 +311,7 @@ router.put('/:id', categoryController.updateCategory);
  *       500:
  *         description: Error deleting category
  */
-router.delete('/:id', categoryController.deleteCategory);
+router.delete('/:id', categoryValidators.deleteCategoryValidator, validate, categoryController.deleteCategory);
 
 /**
  * @swagger
@@ -345,6 +347,6 @@ router.delete('/:id', categoryController.deleteCategory);
  *       500:
  *         description: Error removing category from location
  */
-router.delete('/:categoryId/locations/:locationId', categoryController.removeCategoryFromLocation);
+router.delete('/:categoryId/locations/:locationId', categoryValidators.removeCategoryFromLocationValidator, validate, categoryController.removeCategoryFromLocation);
 
 export default router;

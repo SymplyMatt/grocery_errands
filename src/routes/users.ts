@@ -1,5 +1,7 @@
 import express from 'express';
 import { UserController } from '../controllers/users';
+import validate from '../middleware/validate';
+import * as userValidators from '../validators/users';
 
 const router = express.Router();
 const userController = new UserController();
@@ -30,7 +32,7 @@ const userController = new UserController();
  *       500:
  *         description: Internal Server Error
  */
-router.get('/', userController.getAllUsers);
+router.get('/', userValidators.getAllUsersValidator, validate, userController.getAllUsers);
 
 /**
  * @swagger
@@ -66,7 +68,7 @@ router.get('/', userController.getAllUsers);
  *       500:
  *         description: Internal Server Error
  */
-router.get('/users/:id', userController.getUserById);
+router.get('/users/:id', userValidators.getUserByIdValidator, validate, userController.getUserById);
 
 /**
  * @swagger
@@ -136,7 +138,7 @@ router.get('/users/:id', userController.getUserById);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/', userController.createUser);
+router.post('/', userValidators.createUserValidator, validate, userController.createUser);
 
 /**
  * @swagger
@@ -180,7 +182,7 @@ router.post('/', userController.createUser);
  *       500:
  *         description: Internal Server Error
  */
-router.put('/:id', userController.updateUser);
+router.put('/:id', userValidators.updateUserValidator, validate, userController.updateUser);
 
 /**
  * @swagger
@@ -216,7 +218,7 @@ router.put('/:id', userController.updateUser);
  *       500:
  *         description: Internal Server Error
  */
-router.delete('/:id', userController.deleteUser);
+router.delete('/:id', userValidators.deleteUserValidator, validate, userController.deleteUser);
 
 /**
  * @swagger
@@ -259,7 +261,7 @@ router.delete('/:id', userController.deleteUser);
  *       500:
  *         description: Error fetching users
  */
-router.get('/location/:locationId', userController.getUsersByLocation);
+router.get('/location/:locationId', userValidators.getUsersByLocationValidator, validate, userController.getUsersByLocation);
 
 /**
  * @swagger
@@ -306,7 +308,7 @@ router.get('/location/:locationId', userController.getUsersByLocation);
  *       500:
  *         description: Error searching users
  */
-router.get('/search', userController.searchUsers);
+router.get('/search', userValidators.searchUsersValidator, validate, userController.searchUsers);
 
 /**
  * @swagger
@@ -341,7 +343,7 @@ router.get('/search', userController.searchUsers);
  *       500:
  *         description: Error fetching user profile
  */
-router.get('/profile/:id', userController.getUserProfile);
+router.get('/profile/:id', userValidators.getUserProfileValidator, validate, userController.getUserProfile);
 
 /**
  * @swagger
@@ -388,7 +390,7 @@ router.get('/profile/:id', userController.getUserProfile);
  *       500:
  *         description: Error updating user location
  */
-router.put('/:userId/location', userController.updateUserLocation);
+router.put('/:userId/location', userValidators.updateUserLocationValidator, validate, userController.updateUserLocation);
 
 /**
  * @swagger
@@ -451,7 +453,7 @@ router.put('/:userId/location', userController.updateUserLocation);
  *                 error:
  *                   type: string
  */
-router.post('/login', userController.login);
+router.post('/login', userValidators.loginValidator, validate, userController.login);
 
 /**
  * @swagger
@@ -495,7 +497,7 @@ router.post('/login', userController.login);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/verify', userController.verifyUser);
+router.post('/verify', userValidators.verifyUserValidator, validate, userController.verifyUser);
 
 /**
  * @swagger
@@ -535,6 +537,6 @@ router.post('/verify', userController.verifyUser);
  *       500:
  *         description: Internal Server Error
  */
-router.post('/resend-verification', userController.resendVerificationCode);
+router.post('/resend-verification', userValidators.resendVerificationCodeValidator, validate, userController.resendVerificationCode);
 
 export default router;

@@ -5,6 +5,8 @@ import authenticateToken from '../middleware/authenticateToken';
 import authenticateAdmin from '../middleware/authenticateAdmin';
 import { OrderController } from '../controllers/order';
 import authenticateUser from '../middleware/authenticateUser';
+import validate from '../middleware/validate';
+import * as orderValidators from '../validators/order';
 
 const router = express.Router();
 const ordercontroller = new OrderController();
@@ -71,6 +73,8 @@ const ordercontroller = new OrderController();
 router.post('/',
     authenticateToken,
     authenticateUser,
+    orderValidators.createOrderValidator,
+    validate,
     ordercontroller.createOrder
 );
 
@@ -108,6 +112,8 @@ router.post('/',
 router.get('/user',
     authenticateToken,
     authenticateUser,
+    orderValidators.getUserOrdersValidator,
+    validate,
     ordercontroller.getUserOrders
 );
 
@@ -172,6 +178,8 @@ router.get('/user',
 router.get('/',
     authenticateToken,
     authenticateUser,
+    orderValidators.getOrdersValidator,
+    validate,
     ordercontroller.getOrders
 );
 
@@ -202,6 +210,8 @@ router.get('/',
 router.get('/:id',
     authenticateToken,
     authenticateUser,
+    orderValidators.getOrderByIdValidator,
+    validate,
     ordercontroller.getOrderById
 );
 
@@ -244,7 +254,9 @@ router.get('/:id',
  *         description: Failed to update order status
  */
 router.patch('/:id/status',
-    authenticateToken, 
+    authenticateToken,
+    orderValidators.updateOrderStatusValidator,
+    validate,
     ordercontroller.updateOrderStatus
 );
 

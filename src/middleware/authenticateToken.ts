@@ -8,8 +8,6 @@ export interface AuthRequest extends Request {
   phone?: string;
   username?: string | null;
   role?: string;
-  apiToken?: string;
-  apiKey?: string;
 }
 
 const authenticateToken = (req: Request, res: Response, next: NextFunction) => {

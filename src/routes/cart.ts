@@ -23,10 +23,8 @@ const cartController = new CartController();
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -89,10 +87,8 @@ router.post('/',
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -160,10 +156,8 @@ router.get('/',
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -200,10 +194,8 @@ router.get('/:cartItemId',
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -255,10 +247,8 @@ router.put('/:cartItemId',
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -295,10 +285,8 @@ router.delete('/:cartItemId',
  *     tags: [Cart]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string

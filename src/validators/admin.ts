@@ -19,7 +19,6 @@ export const updateAdminValidator = [
   body('phone').optional().trim(),
   body('username').optional().trim(),
   body('role').optional().trim(),
-  body('permissions').optional().isArray().withMessage('Permissions must be an array'),
   body('isActive').optional().isBoolean().withMessage('isActive must be a boolean'),
 ];
 

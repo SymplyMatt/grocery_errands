@@ -27,7 +27,6 @@ const ordercontroller = new OrderController();
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -86,7 +85,6 @@ router.post('/',
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -117,6 +115,112 @@ router.get('/user',
     ordercontroller.getUserOrders
 );
 
+
+
+/**
+ * @swagger
+ * /orders/{id}/status:
+ *   patch:
+ *     summary: Update the status of an order
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED]
+ *     responses:
+ *       200:
+ *         description: Order status updated successfully
+ *       400:
+ *         description: Invalid status
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Failed to update order status
+ */
+router.patch('/:id/status',
+    authenticateToken,
+    orderValidators.updateOrderStatusValidator,
+    validate,
+    ordercontroller.updateOrderStatus
+);
+
+/**
+ * @swagger
+ * /orders/monthly:
+ *   get:
+ *     summary: Get monthly order counts for the current year
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Monthly orders retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 monthlyOrders:
+ *                   type: array
+ *                   items:
+ *                     type: integer
+ *                   description: Array of 12 numbers representing order counts for each month (Jan-Dec)
+ *       500:
+ *         description: Failed to fetch monthly orders
+ */
+router.get('/monthly',
+    ordercontroller.getMonthlyOrders
+);
+/**
+ * @swagger
+ * /orders/{id}:
+ *   get:
+ *     summary: Get a specific order by ID
+ *     tags: [Orders]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Order ID
+ *     responses:
+ *       200:
+ *         description: Order retrieved successfully
+ *       404:
+ *         description: Order not found
+ *       500:
+ *         description: Failed to fetch order
+ */
+router.get('/:id',
+    authenticateToken,
+    authenticateAdmin,
+    orderValidators.getOrderByIdValidator,
+    validate,
+    ordercontroller.getOrderById
+);
+
 /**
  * @swagger
  * /orders:
@@ -125,7 +229,6 @@ router.get('/user',
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -177,87 +280,10 @@ router.get('/user',
  */
 router.get('/',
     authenticateToken,
-    authenticateUser,
+    authenticateAdmin,
     orderValidators.getOrdersValidator,
     validate,
     ordercontroller.getOrders
-);
-
-/**
- * @swagger
- * /orders/{id}:
- *   get:
- *     summary: Get a specific order by ID
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Order ID
- *     responses:
- *       200:
- *         description: Order retrieved successfully
- *       404:
- *         description: Order not found
- *       500:
- *         description: Failed to fetch order
- */
-router.get('/:id',
-    authenticateToken,
-    authenticateUser,
-    orderValidators.getOrderByIdValidator,
-    validate,
-    ordercontroller.getOrderById
-);
-
-/**
- * @swagger
- * /orders/{id}/status:
- *   patch:
- *     summary: Update the status of an order
- *     tags: [Orders]
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Order ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - status
- *             properties:
- *               status:
- *                 type: string
- *                 enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED]
- *     responses:
- *       200:
- *         description: Order status updated successfully
- *       400:
- *         description: Invalid status
- *       404:
- *         description: Order not found
- *       500:
- *         description: Failed to update order status
- */
-router.patch('/:id/status',
-    authenticateToken,
-    orderValidators.updateOrderStatusValidator,
-    validate,
-    ordercontroller.updateOrderStatus
 );
 
 export default router;

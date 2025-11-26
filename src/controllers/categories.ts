@@ -12,7 +12,30 @@ export class CategoryController {
 
     public getAllCategories = async (req: Request, res: Response): Promise<void> => {
         try {
-            const categories = await this.categoryRepository.find({}, { limit: 1000 });
+            const { page = 1, limit = 10, name } = req.query;
+            let filter: any = { deletedAt: null };
+            
+            if (name) {
+                filter.name = { $regex: name, $options: 'i' };
+            }
+            
+            const categories = await this.categoryRepository.find(filter, {
+                page: Number(page),
+                limit: Number(limit),
+                sort: { createdAt: -1 },
+                populate: [
+                    {
+                        path: 'productCategories',
+                        populate: {
+                            path: 'product',
+                            populate: [
+                                { path: 'productOptions' },
+                                { path: 'productContents' }
+                            ]
+                        }
+                    }
+                ]
+            });
             res.status(200).json(categories);
         } catch (err) {
             res.status(500).json({ message: 'Failed to fetch categories', error: err });
@@ -30,7 +53,25 @@ export class CategoryController {
 
     public getCategoryById = async (req: Request, res: Response): Promise<void> => {
         try {
-            const category = await this.categoryRepository.findById(req.params.id, { populate: ['productCategories', 'locationCategories'] });
+            const category = await this.categoryRepository.findById(req.params.id, {
+                populate: [
+                    {
+                        path: 'productCategories',
+                        populate: {
+                            path: 'product',
+                            populate: [
+                                { path: 'productOptions' },
+                                { path: 'productContents' },
+                                {
+                                    path: 'productCategories',
+                                    populate: { path: 'category' }
+                                }
+                            ]
+                        }
+                    },
+                    { path: 'locationCategories' }
+                ]
+            });
             if (!category || category.deletedAt) {
                 res.status(404).json({ message: 'Category not found' });
                 return;

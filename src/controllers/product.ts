@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { PopulateOptions } from 'mongoose';
 import { Product } from '../models/product/Product';
 import { BaseRepository } from '../models/base';
-import { IProduct, IProductOption, LocationProduct, ProductCategory, ProductContent, ProductOption } from '../models';
+import { IProduct, IProductOption, LocationProduct, ProductCategory, ProductContent, ProductOption, OrderProduct } from '../models';
 
 export class ProductController {
   private productRepository: BaseRepository<IProduct>;
@@ -25,7 +25,45 @@ export class ProductController {
 
   public getAllProducts = async (req: Request, res: Response): Promise<void> => {
     try {
-      const products = await this.productRepository.find({}, { populate: this.populationOptions});
+      const { page = 1, limit = 10, name, inSeason, categoryId } = req.query;
+      let filter: any = { deletedAt: null };
+      
+      if (name) {
+        filter.name = { $regex: name, $options: 'i' };
+      }
+      
+      if (inSeason !== undefined) {
+        const inSeasonValue = String(inSeason).toLowerCase();
+        filter.inSeason = inSeasonValue === 'true';
+      }
+      
+      if (categoryId) {
+        const productCategories = await ProductCategory.find({ categoryId }).select('productId');
+        const productIds = productCategories.map(pc => pc.productId);
+        if (productIds.length > 0) {
+          filter._id = { $in: productIds };
+        } else {
+          // No products in this category, return empty result
+          res.status(200).json({
+            results: [],
+            pagination: {
+              currentPage: Number(page),
+              totalPages: 0,
+              total: 0,
+              hasNext: false,
+              hasPrev: false
+            }
+          });
+          return;
+        }
+      }
+      
+      const products = await this.productRepository.find(filter, {
+        page: Number(page),
+        limit: Number(limit),
+        populate: this.populationOptions,
+        sort: { createdAt: -1 }
+      });
       res.status(200).json(products);
     } catch (err) {
       res.status(500).json({ message: 'Failed to fetch products', error: err });
@@ -210,11 +248,12 @@ export class ProductController {
   public updateProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { name, description, image } = req.body;
+      const { name, description, image, inSeason } = req.body;
       const updateData: any = { updatedBy: "", updatedAt: new Date()};
       if (name) updateData.name = name;
       if (description) updateData.description = description;
       if (image) updateData.image = image;
+      if (inSeason !== undefined) updateData.inSeason = inSeason;
       const product = await this.productRepository.updateById(id, updateData, { new: true });
       if (!product) {
         res.status(404).json({ message: 'Product not found' });
@@ -235,6 +274,20 @@ export class ProductController {
         res.status(404).json({ message: 'Product not found' });
         return;
       }
+      
+      // Check if product has any orders
+      const productOptions = await ProductOption.find({ productId: id }).select('_id');
+      const productOptionIds = productOptions.map(po => po._id);
+      const hasOrders = await OrderProduct.exists({ productOptionId: { $in: productOptionIds } });
+      
+      if (hasOrders) {
+        // Mark as unavailable instead of deleting
+        await this.productRepository.updateById(id, { inSeason: false, updatedBy: "", updatedAt: new Date() });
+        res.status(200).json({ message: 'Product marked as unavailable (has existing orders)' });
+        return;
+      }
+      
+      // No orders, safe to delete
       await Promise.all([
         ProductOption.deleteMany({ productId: id }),
         ProductContent.deleteMany({ productId: id }),

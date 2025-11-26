@@ -6,69 +6,7 @@ import * as userValidators from '../validators/users';
 const router = express.Router();
 const userController = new UserController();
 
-/**
- * @swagger
- * /users:
- *   get:
- *     summary: Get all users
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
- *     responses:
- *       200:
- *         description: A list of users
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       500:
- *         description: Internal Server Error
- */
-router.get('/', userValidators.getAllUsersValidator, validate, userController.getAllUsers);
 
-/**
- * @swagger
- * /users/{id}:
- *   get:
- *     summary: Get a user by ID
- *     tags: [Users]
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: User ID
- *     responses:
- *       200:
- *         description: User found
- *       401:
- *         description: Unauthorized
- *       403:
- *         description: Forbidden
- *       404:
- *         description: User not found
- *       500:
- *         description: Internal Server Error
- */
-router.get('/users/:id', userValidators.getUserByIdValidator, validate, userController.getUserById);
 
 /**
  * @swagger
@@ -78,10 +16,8 @@ router.get('/users/:id', userValidators.getUserByIdValidator, validate, userCont
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -148,10 +84,8 @@ router.post('/', userValidators.createUserValidator, validate, userController.cr
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -192,10 +126,8 @@ router.put('/:id', userValidators.updateUserValidator, validate, userController.
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -228,10 +160,8 @@ router.delete('/:id', userValidators.deleteUserValidator, validate, userControll
  *     tags: [Users] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -271,10 +201,8 @@ router.get('/location/:locationId', userValidators.getUsersByLocationValidator, 
  *     tags: [Auth] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -318,10 +246,8 @@ router.get('/search', userValidators.searchUsersValidator, validate, userControl
  *     tags: [Auth] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -353,10 +279,8 @@ router.get('/profile/:id', userValidators.getUserProfileValidator, validate, use
  *     tags: [Users] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -463,10 +387,8 @@ router.post('/login', userValidators.loginValidator, validate, userController.lo
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -507,10 +429,8 @@ router.post('/verify', userValidators.verifyUserValidator, validate, userControl
  *     tags: [Users]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -538,5 +458,66 @@ router.post('/verify', userValidators.verifyUserValidator, validate, userControl
  *         description: Internal Server Error
  */
 router.post('/resend-verification', userValidators.resendVerificationCodeValidator, validate, userController.resendVerificationCode);
+
+/**
+ * @swagger
+ * /users/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     responses:
+ *       200:
+ *         description: User found
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get('/:id', userValidators.getUserByIdValidator, validate, userController.getUserById);
+
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Get all users
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *     responses:
+ *       200:
+ *         description: A list of users
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Forbidden
+ *       500:
+ *         description: Internal Server Error
+ */
+router.get('/', userValidators.getAllUsersValidator, validate, userController.getAllUsers);
 
 export default router;

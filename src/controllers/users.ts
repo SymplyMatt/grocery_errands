@@ -14,10 +14,19 @@ export class UserController {
 
     public getAllUsers = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { locationId, page = 1, limit = 10 } = req.query;
+            const { locationId, page = 1, limit = 10, firstname, lastname, email } = req.query;
             let filter: any = { deletedAt: null };
             if (locationId) {
                 filter.locationId = locationId;
+            }
+            if (firstname) {
+                filter.firstname = { $regex: firstname as string, $options: 'i' };
+            }
+            if (lastname) {
+                filter.lastname = { $regex: lastname as string, $options: 'i' };
+            }
+            if (email) {
+                filter.email = { $regex: email as string, $options: 'i' };
             }
             const users = await this.userRepository.find(filter, {
                 page: Number(page),

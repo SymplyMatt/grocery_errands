@@ -18,10 +18,8 @@ const locationproductController = new LocationProductController();
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -64,10 +62,8 @@ router.get('/', productcontroller.getAllProducts);
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -99,10 +95,8 @@ router.get('/:id', productValidators.getProductByIdValidator, validate, productc
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -208,10 +202,8 @@ router.get('/:productId/related', productValidators.getRelatedProductsValidator,
  *     tags: [Products]  
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -244,10 +236,8 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -347,10 +337,8 @@ router.post('/create',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -385,7 +373,7 @@ router.post('/create',
  *       500:
  *         description: Error adding product option
  */
-router.post('/products/:productId/options',
+router.post('/:productId/options',
     authenticateToken,
     authenticateAdmin,
     productValidators.addProductOptionValidator,
@@ -401,10 +389,8 @@ router.post('/products/:productId/options',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -434,7 +420,7 @@ router.post('/products/:productId/options',
  *       500:
  *         description: Error adding product location
  */
-router.post('/products/:productId/locations',
+router.post('/:productId/locations',
     authenticateToken,
     authenticateAdmin,
     productValidators.addProductLocationValidator,
@@ -450,10 +436,8 @@ router.post('/products/:productId/locations',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -483,7 +467,7 @@ router.post('/products/:productId/locations',
  *       500:
  *         description: Error adding product category
  */
-router.post('/products/:productId/categories',
+router.post('/:productId/categories',
     authenticateToken,
     authenticateAdmin,
     productValidators.addProductCategoryValidator,
@@ -499,10 +483,8 @@ router.post('/products/:productId/categories',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -532,7 +514,7 @@ router.post('/products/:productId/categories',
  *       500:
  *         description: Error updating product
  */
-router.put('/products/:id',
+router.put('/:id',
     authenticateToken,
     authenticateAdmin,
     productValidators.updateProductValidator,
@@ -548,10 +530,8 @@ router.put('/products/:id',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -581,7 +561,7 @@ router.put('/products/:id',
  *       500:
  *         description: Error updating product content
  */
-router.put('/products/:productId/content',
+router.put('/:productId/content',
     authenticateToken,
     authenticateAdmin,
     productValidators.updateProductContentValidator,
@@ -597,10 +577,8 @@ router.put('/products/:productId/content',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -638,7 +616,7 @@ router.put('/products/:productId/content',
  *       500:
  *         description: Error updating product option
  */
-router.put('/products/:productId/options/:optionId',
+router.put('/:productId/options/:optionId',
     authenticateToken,
     authenticateAdmin,
     productValidators.updateProductOptionValidator,
@@ -654,10 +632,8 @@ router.put('/products/:productId/options/:optionId',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -675,7 +651,7 @@ router.put('/products/:productId/options/:optionId',
  *       500:
  *         description: Error deleting product
  */
-router.delete('/products/:id',
+router.delete('/:id',
     authenticateToken,
     authenticateAdmin,
     productValidators.deleteProductValidator,
@@ -691,10 +667,8 @@ router.delete('/products/:id',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -717,7 +691,7 @@ router.delete('/products/:id',
  *       500:
  *         description: Error removing product category
  */
-router.delete('/products/:productId/categories/:categoryId',
+router.delete('/:productId/categories/:categoryId',
     authenticateToken,
     authenticateAdmin,
     productValidators.removeProductCategoryValidator,
@@ -733,10 +707,8 @@ router.delete('/products/:productId/categories/:categoryId',
  *     tags: [Products] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -759,7 +731,7 @@ router.delete('/products/:productId/categories/:categoryId',
  *       500:
  *         description: Error deleting product option
  */
-router.delete('/products/:productId/options/:optionId',
+router.delete('/:productId/options/:optionId',
     authenticateToken,
     authenticateAdmin,
     productValidators.deleteProductOptionValidator,

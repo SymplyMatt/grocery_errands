@@ -22,16 +22,41 @@ export class OrderController {
                 path: 'user'
             },
             {
-                path: 'payments'
+                path: 'payments',
+                populate: [
+                    {
+                        path: 'user',
+                        select: 'firstname lastname email phone'
+                    }
+                ]
             },
             {
                 path: 'orderProducts',
                 populate: [
                     {
-                        path: 'product'
+                        path: 'user',
+                        select: 'firstname lastname email phone'
                     },
                     {
-                        path: 'productOption'
+                        path: 'product',
+                        populate: [
+                            {
+                                path: 'productCategories',
+                                populate: [
+                                    {
+                                        path: 'category'
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        path: 'productOption',
+                        populate: [
+                            {
+                                path: 'product'
+                            }
+                        ]
                     }
                 ]
             }
@@ -169,7 +194,8 @@ export class OrderController {
                 sort: { createdAt: -1 },
                 populate: this.populationOptions
             });
-            const totalOrders = await this.orderRepository.count({});
+            // Use the filtered count from pagination result, which already applies the filter
+            const totalOrders = result.pagination.total;
             res.status(200).json({
                 message: 'Orders retrieved successfully',
                 orders: result.results,
@@ -232,6 +258,57 @@ export class OrderController {
 
         } catch (err) {
             res.status(500).json({ message: 'Failed to update order status', error: err });
+        }
+    };
+
+    public getMonthlyOrders = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth(); // 0-11 (0 = January)
+            
+            // Start of current year
+            const startOfYear = new Date(currentYear, 0, 1);
+            // End of current month
+            const endOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0, 23, 59, 59, 999);
+
+            // Initialize array with 12 zeros
+            const monthlyCounts = new Array(12).fill(0);
+
+            // Aggregate orders by month
+            const monthlyOrders = await Order.aggregate([
+                {
+                    $match: {
+                        createdAt: {
+                            $gte: startOfYear,
+                            $lte: endOfCurrentMonth
+                        }
+                    }
+                },
+                {
+                    $group: {
+                        _id: { $month: '$createdAt' },
+                        count: { $sum: 1 }
+                    }
+                },
+                {
+                    $sort: { _id: 1 }
+                }
+            ]);
+
+            // Fill in the counts for months that have orders
+            monthlyOrders.forEach((item: { _id: number; count: number }) => {
+                // MongoDB $month returns 1-12, array index is 0-11
+                monthlyCounts[item._id - 1] = item.count;
+            });
+
+            res.status(200).json({
+                message: 'Monthly orders retrieved successfully',
+                monthlyOrders: monthlyCounts
+            });
+
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch monthly orders', error: err });
         }
     };
 }

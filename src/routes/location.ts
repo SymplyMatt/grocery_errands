@@ -23,10 +23,8 @@ const locationController = new LocationController();
 *     tags: [Locations] 
 *     security:
 *       - bearerAuth: []
-*       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
 *     parameters:
 *       - in: header
-*         name: x-api-key
 *         required: true
 *         schema:
 *           type: string
@@ -47,10 +45,8 @@ router.get('/', locationController.getAllLocations);
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -78,10 +74,8 @@ router.get('/:id', locationValidators.getLocationByIdValidator, validate, locati
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -117,10 +111,8 @@ router.get('/:locationId/categories', locationValidators.getLocationCategoriesVa
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -158,10 +150,8 @@ router.get('/:locationId/products', locationValidators.getLocationProductsValida
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -189,10 +179,8 @@ router.get('/:locationId/stats', locationValidators.getLocationStatsValidator, v
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -231,10 +219,8 @@ router.post('/',
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -278,10 +264,8 @@ router.put('/:id',
  *     tags: [Locations] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string

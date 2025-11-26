@@ -42,6 +42,9 @@ export const updateUserLocationValidator = [
 
 export const getAllUsersValidator = [
   query('locationId').optional().isMongoId().withMessage('Invalid location ID'),
+  query('firstname').optional().isString().withMessage('Firstname must be a string'),
+  query('lastname').optional().isString().withMessage('Lastname must be a string'),
+  query('email').optional().isString().withMessage('Email must be a string'),
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
 ];

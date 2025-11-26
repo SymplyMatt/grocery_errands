@@ -8,8 +8,6 @@ declare global {
       phone?: string;
       username?: string | null;
       role?: string;
-      apiToken?: string;
-      apiKey?: string;
     }
   }
 }

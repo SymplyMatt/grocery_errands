@@ -10,8 +10,6 @@ import timeout from 'connect-timeout';
 import cookieParser from 'cookie-parser';
 import router from './routes/router';
 import connectDB from './config/mongodb';
-import { decryptApiKey } from './middleware/decryptAndCheckKey';
-import { authenticateApiKey } from './middleware/authenticateApiKey';
 
 dotenv.config();
 validateEnv();
@@ -23,7 +21,7 @@ const timeoutDuration = '1m';
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 
@@ -39,7 +37,6 @@ app.use(helmet());
 app.set('x-powered-by', false);
 app.use(cookieParser());
 
-// app.use('/', decryptApiKey, authenticateApiKey, router);
 app.use('/', router);
 app.use(handleErrors);
 

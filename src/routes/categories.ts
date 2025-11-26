@@ -21,10 +21,8 @@ const categoryController = new CategoryController();
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -45,10 +43,8 @@ router.get('/', categoryController.getAllCategories);
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -69,10 +65,8 @@ router.get('/withproducts', categoryController.getCategoriesWithProducts);
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -100,10 +94,8 @@ router.get('/:id', categoryValidators.getCategoryByIdValidator, validate, catego
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -139,10 +131,8 @@ router.get('/:categoryId/products', categoryValidators.getProductsInCategoryVali
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -168,10 +158,8 @@ router.get('/:locationId/categories', categoryValidators.getCategoriesByLocation
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -209,10 +197,8 @@ router.post('/', categoryValidators.createCategoryValidator, validate, categoryC
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -249,10 +235,8 @@ router.post('/locations', categoryValidators.addCategoryToLocationValidator, val
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -290,10 +274,8 @@ router.put('/:id', categoryValidators.updateCategoryValidator, validate, categor
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string
@@ -321,10 +303,8 @@ router.delete('/:id', categoryValidators.deleteCategoryValidator, validate, cate
  *     tags: [Categories] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
  *       - in: header
- *         name: x-api-key
  *         required: true
  *         schema:
  *           type: string

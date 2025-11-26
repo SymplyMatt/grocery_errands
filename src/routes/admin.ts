@@ -16,14 +16,7 @@ const adminController = new AdminController();
  *     tags: [Admins]
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
  *       - in: query
  *         name: page
  *         schema:
@@ -46,41 +39,6 @@ router.get('/',
     adminController.getAllAdmins
 );
 
-/**
- * @swagger
- * /admins/{id}:
- *   get:
- *     summary: Get admin by ID
- *     tags: [Admins]
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Admin ID
- *     responses:
- *       200:
- *         description: Admin found
- *       404:
- *         description: Admin not found
- */
-router.get('/:id',
-    authenticateToken,
-    authenticateAdmin,
-    adminValidators.getAdminByIdValidator,
-    validate,
-    adminController.getAdminById
-);
 
 /**
  * @swagger
@@ -90,14 +48,6 @@ router.get('/:id',
  *     tags: [Admins] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -128,10 +78,6 @@ router.get('/:id',
  *               role:
  *                 type: string
  *                 default: admin
- *               permissions:
- *                 type: array
- *                 items:
- *                   type: string
  *     responses:
  *       201:
  *         description: Admin created successfully
@@ -156,14 +102,7 @@ router.post('/',
  *     tags: [Admins] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -198,14 +137,7 @@ router.put('/:id',
  *     tags: [Admins] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
  *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
  *       - in: path
  *         name: id
  *         required: true
@@ -239,41 +171,6 @@ router.put('/:id/password',
     adminController.updateAdminPassword
 );
 
-/**
- * @swagger
- * /admins/{id}:
- *   delete:
- *     summary: Soft delete an admin
- *     tags: [Admins] 
- *     security:
- *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Admin ID
- *     responses:
- *       200:
- *         description: Admin deleted successfully
- *       404:
- *         description: Admin not found
- */
-router.delete('/:id',
-    authenticateToken,
-    authenticateAdmin,
-    adminValidators.deleteAdminValidator,
-    validate,
-    adminController.deleteAdmin
-);
 
 /**
  * @swagger
@@ -283,14 +180,6 @@ router.delete('/:id',
  *     tags: [Auth] 
  *     security:
  *       - bearerAuth: []
- *       - apiKeyAuth: []  # Indicate x-api-key is required in the headers
- *     parameters:
- *       - in: header
- *         name: x-api-key
- *         required: true
- *         schema:
- *           type: string
- *         description: The API key for authentication
  *     requestBody:
  *       required: true
  *       content:
@@ -352,4 +241,95 @@ router.post('/login',
     adminController.login
 );
 
+/**
+ * @swagger
+ * /admins/metrics:
+ *   get:
+ *     summary: Get ecommerce metrics (customers, products, orders count)
+ *     tags: [Admins]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Metrics retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 customers:
+ *                   type: number
+ *                   example: 3782
+ *                 products:
+ *                   type: number
+ *                   example: 3782
+ *                 orders:
+ *                   type: number
+ *                   example: 5359
+ *       500:
+ *         description: Server error
+ */
+router.get('/metrics',
+    authenticateToken,
+    authenticateAdmin,
+    adminController.getMetrics
+);
+
+/**
+ * @swagger
+ * /admins/{id}:
+ *   delete:
+ *     summary: Soft delete an admin
+ *     tags: [Admins] 
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin ID
+ *     responses:
+ *       200:
+ *         description: Admin deleted successfully
+ *       404:
+ *         description: Admin not found
+ */
+router.delete('/:id',
+    authenticateToken,
+    authenticateAdmin,
+    adminValidators.deleteAdminValidator,
+    validate,
+    adminController.deleteAdmin
+);
+
+/**
+ * @swagger
+ * /admins/{id}:
+ *   get:
+ *     summary: Get admin by ID
+ *     tags: [Admins]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Admin ID
+ *     responses:
+ *       200:
+ *         description: Admin found
+ *       404:
+ *         description: Admin not found
+ */
+router.get('/:id',
+    authenticateToken,
+    authenticateAdmin,
+    adminValidators.getAdminByIdValidator,
+    validate,
+    adminController.getAdminById
+);
 export default router;

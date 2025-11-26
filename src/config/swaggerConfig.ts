@@ -24,17 +24,17 @@ const swaggerDefinition = {
         name: 'token',
         description: 'Auth token stored in cookie (contains user info)',
       },
-      ApiKeyAuth: {
-        type: 'apiKey',
-        in: 'header',
-        name: 'x-api-key',
-        description: 'API key passed in request header',
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT token passed in Authorization header',
       },
     },
   },
   security: [
     { cookieAuth: [] },
-    { ApiKeyAuth: [] },
+    { bearerAuth: [] },
   ],  
 };
 

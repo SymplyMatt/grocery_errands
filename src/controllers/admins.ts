@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { BaseRepository } from '../models/base';
-import { IAdmin, Admin, AdminAuth } from '../models';
+import { IAdmin, Admin, AdminAuth, User, Product, Order, IUser, IProduct, IOrder } from '../models';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
@@ -86,7 +86,7 @@ export class AdminController {
             });
             res.status(201).json({
                 message: 'Admin created successfully',
-                admin: { admin, adminAuth }
+                admin: { admin }
             });
         } catch (err) {
             res.status(500).json({ message: 'Error creating admin', error: err });
@@ -233,7 +233,7 @@ export class AdminController {
             }
             const jwtSecret = process.env.JWT_SECRET as string;
             const accessToken = jwt.sign(
-                { user: user._id, email: user.email, username: "",locationId: "",type: 'user' },
+                { user: user._id, email: user.email, username: "",locationId: "",type: 'admin', role: "admin" },
                 jwtSecret,
                 { expiresIn: '7d' }
             );
@@ -249,6 +249,28 @@ export class AdminController {
             });
         } catch (err) {
             res.status(500).json({ message: 'Login failed', error: err });
+        }
+    };
+
+    public getMetrics = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const userRepository = new BaseRepository<IUser>(User);
+            const productRepository = new BaseRepository<IProduct>(Product);
+            const orderRepository = new BaseRepository<IOrder>(Order);
+
+            const [customers, products, orders] = await Promise.all([
+                userRepository.count({ deletedAt: null }),
+                productRepository.count({ deletedAt: null }),
+                orderRepository.count({})
+            ]);
+
+            res.status(200).json({
+                customers,
+                products,
+                orders
+            });
+        } catch (err) {
+            res.status(500).json({ message: 'Failed to fetch metrics', error: err });
         }
     };
 }

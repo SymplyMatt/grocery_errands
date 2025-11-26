@@ -12,6 +12,7 @@ export { UserAuth } from './auth/UserAuth';
 export { AdminAuth } from './auth/AdminAuth';
 export { ProductContent } from './product/ProductContent';
 export { VerificationCode } from './auth/VerificationCode';
+export { default as PasswordResetToken } from './auth/PasswordResetToken';
 export { UserTopUp } from './users/UserTopUp';
 export { Order } from './order/Order';
 export { Payment } from './order/Payment';

@@ -11,6 +11,8 @@ export const updateCategoryValidator = [
   param('id').isMongoId().withMessage('Invalid category ID'),
   body('name').optional().trim(),
   body('image').optional().trim(),
+  body('locations').optional().isArray().withMessage('Locations must be an array'),
+  body('locations.*').optional().isMongoId().withMessage('Invalid location ID in locations array'),
 ];
 
 export const getCategoryByIdValidator = [

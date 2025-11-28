@@ -36,6 +36,7 @@ export interface IProduct extends Document, ITimestamps, ISoftDelete, IAuditFiel
   _id: Types.ObjectId;
   name: string;
   inSeason: boolean;
+  available: boolean;
   description: string;
   image: string;
   

@@ -256,11 +256,18 @@ router.post('/locations', categoryValidators.addCategoryToLocationValidator, val
  *                 type: string
  *               image:
  *                 type: string
+ *               locations:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of location IDs to associate with the category. If provided, replaces all existing location associations.
  *     responses:
  *       200:
  *         description: Category updated successfully
  *       404:
  *         description: Category not found
+ *       409:
+ *         description: Category with this name already exists
  *       500:
  *         description: Error updating category
  */

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { BaseRepository } from '../models/base';
-import { Category, ICategory, Product, IProduct, ProductCategory, LocationCategory } from '../models';
+import { Category, ICategory, Product, IProduct, ProductCategory, LocationCategory, OrderProduct } from '../models';
+import { AuthRequest } from '../middleware/authenticateToken';
 
 export class CategoryController {
     private categoryRepository: BaseRepository<ICategory>;
@@ -104,15 +105,80 @@ export class CategoryController {
     public updateCategory = async (req: Request, res: Response): Promise<void> => {
         try {
             const { id } = req.params;
-            const { name, image } = req.body;
-            const updateData: any = { updatedBy: "", updatedAt: new Date() };
-            if (name) updateData.name = name;
-            if (image) updateData.image = image;
-            const category = await this.categoryRepository.updateById(id, updateData);
-            if (!category || category.deletedAt) {
+            const { name, image, locations } = req.body;
+            
+            // Check if category exists and is not deleted
+            const existingCategory = await this.categoryRepository.findById(id);
+            if (!existingCategory || existingCategory.deletedAt) {
                 res.status(404).json({ message: 'Category not found' });
                 return;
             }
+
+            // Check for duplicate name (excluding current category)
+            if (name) {
+                const duplicateCategory = await this.categoryRepository.findOne({ 
+                    name: { $regex: new RegExp(`^${name}$`, 'i') },
+                    _id: { $ne: id },
+                    deletedAt: null
+                });
+                if (duplicateCategory) {
+                    res.status(409).json({ message: 'Category with this name already exists' });
+                    return;
+                }
+            }
+
+            // Get adminId from request if available (for updatedBy field)
+            const authReq = req as AuthRequest;
+            const adminId = authReq.user ? authReq.user.toString() : 'admin';
+
+            // Build update data
+            const updateData: any = { 
+                updatedBy: adminId, 
+                updatedAt: new Date() 
+            };
+            if (name) updateData.name = name;
+            if (image) updateData.image = image;
+
+            // Update category
+            const updatedCategory = await this.categoryRepository.updateById(id, updateData, { new: true });
+            if (!updatedCategory) {
+                res.status(404).json({ message: 'Category not found' });
+                return;
+            }
+
+            // Handle location associations update if provided
+            if (locations !== undefined && Array.isArray(locations)) {
+                // Remove existing location associations
+                await LocationCategory.deleteMany({ categoryId: id });
+                
+                // Create new location associations
+                if (locations.length > 0) {
+                    const locationCategoriesDocs = locations.map((locationId: string) => ({ 
+                        categoryId: id, 
+                        locationId,
+                        createdBy: adminId,
+                        updatedBy: adminId
+                    }));
+                    await LocationCategory.insertMany(locationCategoriesDocs);
+                }
+            }
+
+            const category = await this.categoryRepository.findById(id, {
+                populate: [
+                    {
+                        path: 'productCategories',
+                        populate: {
+                            path: 'product',
+                            populate: [
+                                { path: 'productOptions' },
+                                { path: 'productContents' }
+                            ]
+                        }
+                    },
+                    { path: 'locationCategories' }
+                ]
+            });
+
             res.status(200).json({ message: 'Category updated successfully', category });
         } catch (err) {
             res.status(500).json({ message: 'Error updating category', error: err });
@@ -127,10 +193,12 @@ export class CategoryController {
                 res.status(404).json({ message: 'Category not found' });
                 return;
             }
+
             const deletedCategory = await this.categoryRepository.updateById(id, {
                 deletedAt: new Date(),
                 updatedBy: ""
             });
+            await ProductCategory.deleteMany({ categoryId: id });
             await LocationCategory.deleteMany({ categoryId: id });
             res.status(200).json({ message: 'Category deleted successfully', category: deletedCategory });
         } catch (err) {

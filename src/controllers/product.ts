@@ -142,7 +142,9 @@ export class ProductController {
         updatedBy: adminId, 
         description: req.body.description, 
         name: req.body.name, 
-        image: productImageUrl 
+        image: productImageUrl,
+        inSeason: req.body.inSeason !== undefined ? req.body.inSeason : true,
+        available: req.body.available !== undefined ? req.body.available : true
       };
       const product: IProduct = await this.productRepository.create(productData);
       const productCategories = req.body.categories || [];
@@ -320,12 +322,13 @@ export class ProductController {
   public updateProduct = async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
-      const { name, description, image, inSeason } = req.body;
+      const { name, description, image, inSeason, available } = req.body;
       const updateData: any = { updatedBy: "", updatedAt: new Date()};
       if (name) updateData.name = name;
       if (description) updateData.description = description;
       if (image) updateData.image = image;
       if (inSeason !== undefined) updateData.inSeason = inSeason;
+      if (available !== undefined) updateData.available = available;
       const product = await this.productRepository.updateById(id, updateData, { new: true });
       if (!product) {
         res.status(404).json({ message: 'Product not found' });

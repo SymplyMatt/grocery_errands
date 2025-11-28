@@ -10,6 +10,10 @@ const productSchema = new Schema<IProduct>({
     type: Boolean,
     default: true
   },
+  available: {
+    type: Boolean,
+    default: true
+  },
   description: {
     type: String,
     required: true

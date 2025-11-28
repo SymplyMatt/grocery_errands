@@ -143,7 +143,7 @@ router.get('/user',
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED]
+ *                 enum: [PENDING, DELIVERED, PAID]
  *     responses:
  *       200:
  *         description: Order status updated successfully

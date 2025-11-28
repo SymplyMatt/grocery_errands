@@ -74,3 +74,9 @@ export const deleteUserValidator = [
   param('id').isMongoId().withMessage('Invalid user ID'),
 ];
 
+export const updateUserPasswordValidator = [
+  param('id').isMongoId().withMessage('Invalid user ID'),
+  body('currentPassword').notEmpty().withMessage('Current password is required'),
+  body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters'),
+];
+

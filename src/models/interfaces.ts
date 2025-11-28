@@ -187,7 +187,7 @@ export interface IUserTopUp extends Document, ITimestamps, ISoftDelete, IAuditFi
   user?: IUser;
 }
 
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | 'REFUNDED';
+export type OrderStatus = 'PENDING' | 'DELIVERED' | 'PAID';
 export type PaymentMethod = 'TOPUP' | 'PAYSTACK';
 
 export interface IOrder extends Document, ITimestamps {

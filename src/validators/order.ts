@@ -16,13 +16,13 @@ export const createOrderValidator = [
 export const getUserOrdersValidator = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('status').optional().isIn(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).withMessage('Invalid status'),
+  query('status').optional().isIn(['PENDING', 'DELIVERED', 'PAID']).withMessage('Invalid status'),
 ];
 
 export const getOrdersValidator = [
   query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
   query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
-  query('status').optional().isIn(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).withMessage('Invalid status'),
+  query('status').optional().isIn(['PENDING', 'DELIVERED', 'PAID']).withMessage('Invalid status'),
   query('userId').optional().isMongoId().withMessage('Invalid user ID'),
   query('email').optional().trim(),
   query('firstname').optional().trim(),
@@ -38,6 +38,6 @@ export const getOrderByIdValidator = [
 
 export const updateOrderStatusValidator = [
   param('id').isMongoId().withMessage('Invalid order ID'),
-  body('status').isIn(['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED']).withMessage('Invalid status'),
+  body('status').isIn(['PENDING', 'DELIVERED', 'PAID']).withMessage('Invalid status'),
 ];
 

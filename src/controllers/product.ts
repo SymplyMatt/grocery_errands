@@ -2,7 +2,9 @@ import { Request, Response } from 'express';
 import { PopulateOptions } from 'mongoose';
 import { Product } from '../models/product/Product';
 import { BaseRepository } from '../models/base';
-import { IProduct, IProductOption, LocationProduct, ProductCategory, ProductContent, ProductOption, OrderProduct } from '../models';
+import { IProduct, IProductOption, LocationProduct, ProductCategory, ProductContent, ProductOption, OrderProduct, Order } from '../models';
+import { AuthRequest } from '../middleware/authenticateToken';
+import uploadToCloudinary from '../config/uploadImage';
 
 export class ProductController {
   private productRepository: BaseRepository<IProduct>;
@@ -85,27 +87,97 @@ export class ProductController {
 
   public createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
+      const authReq = req as AuthRequest;
+      const adminId = authReq.user ? authReq.user.toString() : '';
+      
+      if (!adminId) {
+        res.status(401).json({ message: 'Authentication required' });
+        return;
+      }
+
+      // Check if product with same name already exists
       const existingProduct = await this.productRepository.findOne({ name: { $regex: new RegExp(`^${req.body.name}$`, 'i') }});
       if (existingProduct) {
         res.status(409).json({ message: 'Product with this name already exists' });
         return;
       }
-      const productData = { createdBy: "admin", updatedBy: "admin", description: req.body.description, name: req.body.name, image: req.body.image };
+      
+      // Get image URL from request body (should be Cloudinary URL)
+      const productImageUrl = req.body.image;
+      if (!productImageUrl) {
+        res.status(400).json({ message: 'Product image is required' });
+        return;
+      }
+
+      const productOptions = req.body.options || [];
+      
+      // Check for duplicate option names within the provided options
+      const optionNames = productOptions.map((option: IProductOption) => option.name?.toLowerCase().trim());
+      const uniqueOptionNames = new Set(optionNames);
+      if (optionNames.length !== uniqueOptionNames.size) {
+        res.status(400).json({ message: 'Duplicate product option names are not allowed' });
+        return;
+      }
+
+      // Check if any product option names already exist in the database
+      if (productOptions.length > 0) {
+        const optionNameQueries = optionNames.map((name: string) => ({ 
+          name: { $regex: new RegExp(`^${name}$`, 'i') },
+          deletedAt: null 
+        }));
+        const existingOptions = await ProductOption.find({ $or: optionNameQueries });
+        
+        if (existingOptions.length > 0) {
+          const existingNames = existingOptions.map(opt => opt.name);
+          res.status(409).json({ 
+            message: 'One or more product options already exist', 
+            existingOptions: existingNames 
+          });
+          return;
+        }
+      }
+
+      const productData = { 
+        createdBy: adminId, 
+        updatedBy: adminId, 
+        description: req.body.description, 
+        name: req.body.name, 
+        image: productImageUrl 
+      };
       const product: IProduct = await this.productRepository.create(productData);
-      const productCategories =req.body.categories || [];
+      const productCategories = req.body.categories || [];
       const productContent = req.body.content;
-      const productOptions = req.body.options;
-      await ProductContent.create({ productId: product._id, content: productContent, createdBy: productData.createdBy });
-      const productOptionsDocs = productOptions.map((option: IProductOption) => ({ productId: product._id, name: option.name, price: Number(option.price), image: option.image, stock: option.stock, createdBy: product.createdBy, updatedBy: product.updatedBy }));
+      
+      await ProductContent.create({ productId: product._id, content: productContent, createdBy: adminId });
+      
+      // Ensure each product option has an image URL
+      const productOptionsDocs = productOptions.map((option: IProductOption) => {
+        if (!option.image) {
+          throw new Error(`Product option "${option.name}" is missing an image URL`);
+        }
+        return { 
+          productId: product._id, 
+          name: option.name, 
+          price: Number(option.price), 
+          image: option.image, 
+          stock: option.stock || 0, 
+          createdBy: adminId, 
+          updatedBy: adminId 
+        };
+      });
+      
       await ProductOption.insertMany(productOptionsDocs);
       const categoryDocs = productCategories.map((categoryId: string) => ({ productId: product._id, categoryId }));
       await ProductCategory.insertMany(categoryDocs);
       const productLocations = req.body.locations || [];
       const locationDocs = productLocations.map((locationId: string) => ({ productId: product._id, locationId }));
       await LocationProduct.insertMany(locationDocs);
-      res.status(200).json(product);
-    } catch (err) {
-      res.status(500).json({ message: 'Error fetching product', error: err });
+      
+      // Fetch the complete product with populated fields
+      const createdProduct = await this.productRepository.findById(product._id.toString(), { populate: this.populationOptions });
+      res.status(201).json(createdProduct);
+    } catch (err: any) {
+      res.status(500).json({ message: 'Error creating product', error: err.message || err });
     }
   };
 
@@ -370,6 +442,210 @@ export class ProductController {
       });
     } catch (err) {
       res.status(500).json({ message: 'Error fetching related products', error: err });
+    }
+  };
+
+  public getTopSellingProducts = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { limit = 10 } = req.query;
+      
+      // Get all delivered/paid orders to count sales
+      const completedOrderStatuses = ['DELIVERED', 'PAID'];
+      const completedOrders = await Order.find({ 
+        status: { $in: completedOrderStatuses } 
+      }).select('_id');
+      const completedOrderIds = completedOrders.map(order => order._id);
+
+      // Aggregate order products to get total quantity sold per product
+      const topSellingAggregation = await OrderProduct.aggregate([
+        {
+          $match: {
+            orderId: { $in: completedOrderIds }
+          }
+        },
+        {
+          $group: {
+            _id: '$productId',
+            totalQuantity: { $sum: '$quantity' },
+            totalRevenue: { $sum: { $multiply: ['$quantity', '$price'] } }
+          }
+        },
+        {
+          $sort: { totalQuantity: -1 }
+        },
+        {
+          $limit: Number(limit)
+        }
+      ]);
+
+      if (topSellingAggregation.length === 0) {
+        res.status(200).json({
+          results: [],
+          pagination: {
+            currentPage: 1,
+            totalPages: 0,
+            total: 0,
+            hasNext: false,
+            hasPrev: false
+          }
+        });
+        return;
+      }
+
+      // Get product IDs from aggregation
+      const productIds = topSellingAggregation.map(item => item._id);
+      
+      // Fetch full product details
+      const productsResult = await this.productRepository.find(
+        { 
+          _id: { $in: productIds },
+          deletedAt: null
+        },
+        { populate: this.populationOptions }
+      );
+
+      const products = productsResult.results || [];
+
+      // Sort products by the order from aggregation (maintain top selling order)
+      const productMap = new Map(products.map((p: IProduct) => [p._id.toString(), p]));
+      const sortedProducts = productIds
+        .map(id => productMap.get(id.toString()))
+        .filter((p): p is IProduct => p !== undefined);
+
+      res.status(200).json({
+        results: sortedProducts,
+        pagination: {
+          currentPage: 1,
+          totalPages: 1,
+          total: sortedProducts.length,
+          hasNext: false,
+          hasPrev: false
+        }
+      });
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching top selling products', error: err });
+    }
+  };
+
+  public searchProducts = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { q, page = 1, limit = 10 } = req.query;
+      
+      if (!q || typeof q !== 'string' || q.trim().length === 0) {
+        res.status(400).json({ message: 'Search query is required' });
+        return;
+      }
+
+      const searchQuery = q.trim();
+      const searchRegex = { $regex: searchQuery, $options: 'i' };
+
+      // Search in product name, description, and product option names
+      const productOptions = await ProductOption.find({
+        name: searchRegex,
+        deletedAt: null
+      }).select('productId');
+      
+      const productIdsFromOptions = [...new Set(productOptions.map(po => po.productId.toString()))];
+
+      // Build filter to search in multiple fields
+      const filter: any = {
+        deletedAt: null,
+        $or: [
+          { name: searchRegex },
+          { description: searchRegex },
+          ...(productIdsFromOptions.length > 0 ? [{ _id: { $in: productIdsFromOptions } }] : [])
+        ]
+      };
+
+      const products = await this.productRepository.find(filter, {
+        page: Number(page),
+        limit: Number(limit),
+        populate: this.populationOptions,
+        sort: { createdAt: -1 }
+      });
+
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json({ message: 'Error searching products', error: err });
+    }
+  };
+
+  public getPopularSearches = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { limit = 5 } = req.query;
+      
+      // Get top selling products and extract their names as popular searches
+      const completedOrderStatuses = ['DELIVERED', 'CONFIRMED', 'PROCESSING', 'SHIPPED'];
+      const completedOrders = await Order.find({ 
+        status: { $in: completedOrderStatuses } 
+      }).select('_id');
+      const completedOrderIds = completedOrders.map(order => order._id);
+
+      const topSellingAggregation = await OrderProduct.aggregate([
+        {
+          $match: {
+            orderId: { $in: completedOrderIds }
+          }
+        },
+        {
+          $group: {
+            _id: '$productId',
+            totalQuantity: { $sum: '$quantity' }
+          }
+        },
+        {
+          $sort: { totalQuantity: -1 }
+        },
+        {
+          $limit: Number(limit)
+        }
+      ]);
+
+      if (topSellingAggregation.length === 0) {
+        res.status(200).json({ results: [] });
+        return;
+      }
+
+      const productIds = topSellingAggregation.map(item => item._id);
+      const products = await this.productRepository.find(
+        { 
+          _id: { $in: productIds },
+          deletedAt: null
+        },
+        { populate: this.populationOptions }
+      );
+
+      // Extract product names as popular searches
+      const popularSearches = (products.results || []).map((p: IProduct) => p.name);
+
+      res.status(200).json({ results: popularSearches });
+    } catch (err) {
+      res.status(500).json({ message: 'Error fetching popular searches', error: err });
+    }
+  };
+
+  public uploadImage = async (req: Request, res: Response): Promise<void> => {
+    try {
+      if (!req.file) {
+        res.status(400).json({ message: 'No image file provided' });
+        return;
+      }
+
+      const imageUrl = await uploadToCloudinary({
+        file: req.file,
+        folder: 'products',
+        resourceType: 'image'
+      });
+
+      res.status(200).json({ 
+        message: 'Image uploaded successfully',
+        url: imageUrl 
+      });
+    } catch (err: any) {
+      res.status(500).json({ 
+        message: 'Error uploading image', 
+        error: err.message || err 
+      });
     }
   };
 }

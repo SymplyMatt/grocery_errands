@@ -38,7 +38,7 @@ const states = [
   'Edo', 'Kwara', 'Osun', 'Ekiti', 'Bayelsa'
 ];
 
-const orderStatuses: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
+const orderStatuses: OrderStatus[] = ['PENDING', 'DELIVERED', 'PAID'];
 const paymentMethods: PaymentMethod[] = ['TOPUP', 'PAYSTACK'];
 
 // Generate random date between start and end dates
@@ -268,7 +268,7 @@ async function seed() {
         const orderDate = randomDate(startDate, endDate);
         
         // Random status (weighted towards more common statuses)
-        const statusWeights = [0.15, 0.15, 0.15, 0.15, 0.20, 0.10, 0.10]; // PENDING, CONFIRMED, PROCESSING, SHIPPED, DELIVERED, CANCELLED, REFUNDED
+        const statusWeights = [0.4, 0.4, 0.2]; // PENDING, DELIVERED, PAID
         const random = Math.random();
         let cumulative = 0;
         let status: OrderStatus = 'PENDING';

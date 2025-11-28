@@ -5,6 +5,7 @@ import authenticateToken from '../middleware/authenticateToken';
 import authenticateAdmin from '../middleware/authenticateAdmin';
 import validate from '../middleware/validate';
 import * as productValidators from '../validators/product';
+import upload from '../config/multer';
 
 const router = express.Router();
 const productcontroller = new ProductController();
@@ -53,6 +54,131 @@ const locationproductController = new LocationProductController();
  *         description: Failed to fetch products
  */
 router.get('/', productcontroller.getAllProducts);
+
+/**
+ * @swagger
+ * /products/top-selling:
+ *   get:
+ *     summary: Get top selling products
+ *     tags: [Products] 
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of top selling products to return (default is 10)
+ *     responses:
+ *       200:
+ *         description: Top selling products retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 pagination:
+ *                   type: object
+ *       500:
+ *         description: Error fetching top selling products
+ */
+router.get('/top-selling', productcontroller.getTopSellingProducts);
+
+/**
+ * @swagger
+ * /products/search:
+ *   get:
+ *     summary: Search products
+ *     tags: [Products] 
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search query string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number for pagination (default is 1)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of products per page (default is 10)
+ *     responses:
+ *       200:
+ *         description: Search results with pagination
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 pagination:
+ *                   type: object
+ *       400:
+ *         description: Invalid search query
+ *       500:
+ *         description: Error searching products
+ */
+router.get('/search', productValidators.searchProductsValidator, validate, productcontroller.searchProducts);
+
+/**
+ * @swagger
+ * /products/popular-searches:
+ *   get:
+ *     summary: Get popular search terms
+ *     tags: [Products] 
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Number of popular searches to return (default is 5, max 20)
+ *     responses:
+ *       200:
+ *         description: Popular search terms retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 results:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *       500:
+ *         description: Error fetching popular searches
+ */
+router.get('/popular-searches', productValidators.getPopularSearchesValidator, validate, productcontroller.getPopularSearches);
 
 /**
  * @swagger
@@ -230,6 +356,53 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
 
 /**
  * @swagger
+ * /products/upload-image:
+ *   post:
+ *     summary: Upload an image to Cloudinary
+ *     tags: [Products] 
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - image
+ *             properties:
+ *               image:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file to upload (jpg, jpeg, png, webp)
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Image uploaded successfully"
+ *                 url:
+ *                   type: string
+ *                   example: "https://res.cloudinary.com/..."
+ *       400:
+ *         description: No image file provided
+ *       500:
+ *         description: Error uploading image
+ */
+router.post('/upload-image',
+    authenticateToken,
+    authenticateAdmin,
+    upload.single('image'),
+    productcontroller.uploadImage
+);
+
+/**
+ * @swagger
  * /products/create:
  *   post:
  *     summary: Create a new product
@@ -263,7 +436,7 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
  *                 description: Description of the product
  *               image:
  *                 type: string
- *                 description: Image URL of the product
+ *                 description: Image URL of the product (from upload-image endpoint)
  *               content:
  *                 type: string
  *                 description: Product content/details
@@ -285,6 +458,7 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
  *                   required:
  *                     - name
  *                     - price
+ *                     - image
  *                   properties:
  *                     name:
  *                       type: string
@@ -292,10 +466,11 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
  *                       type: number
  *                     image:
  *                       type: string
+ *                       description: Image URL for the option (from upload-image endpoint)
  *                     stock:
  *                       type: number
  *     responses:
- *       200:
+ *       201:
  *         description: Product created successfully
  *         content:
  *           application/json:
@@ -322,8 +497,8 @@ router.get('/location/:locationId', productValidators.getLocationWithProductsVal
  *                   type: string
  */
 router.post('/create',
-    // authenticateToken,
-    // authenticateAdmin,
+    authenticateToken,
+    authenticateAdmin,
     productValidators.createProductValidator,
     validate,
     productcontroller.createProduct

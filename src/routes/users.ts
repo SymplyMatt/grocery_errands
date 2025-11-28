@@ -2,6 +2,8 @@ import express from 'express';
 import { UserController } from '../controllers/users';
 import validate from '../middleware/validate';
 import * as userValidators from '../validators/users';
+import authenticateToken from '../middleware/authenticateToken';
+import authenticateUser from '../middleware/authenticateUser';
 
 const router = express.Router();
 const userController = new UserController();
@@ -116,7 +118,7 @@ router.post('/', userValidators.createUserValidator, validate, userController.cr
  *       500:
  *         description: Internal Server Error
  */
-router.put('/:id', userValidators.updateUserValidator, validate, userController.updateUser);
+router.put('/:id', authenticateToken, authenticateUser, userValidators.updateUserValidator, validate, userController.updateUser);
 
 /**
  * @swagger
@@ -151,6 +153,55 @@ router.put('/:id', userValidators.updateUserValidator, validate, userController.
  *         description: Internal Server Error
  */
 router.delete('/:id', userValidators.deleteUserValidator, validate, userController.deleteUser);
+
+/**
+ * @swagger
+ * /users/{id}/password:
+ *   put:
+ *     summary: Update user password
+ *     tags: [Users] 
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: header
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The API key for authentication
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: User ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 format: password
+ *               newPassword:
+ *                 type: string
+ *                 format: password
+ *                 minLength: 6
+ *     responses:
+ *       200:
+ *         description: Password updated successfully
+ *       401:
+ *         description: Current password is incorrect
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Error updating password
+ */
+router.put('/:id/password', authenticateToken, authenticateUser, userValidators.updateUserPasswordValidator, validate, userController.updateUserPassword);
 
 /**
  * @swagger

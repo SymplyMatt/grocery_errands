@@ -239,15 +239,6 @@ export class OrderController {
                 res.status(404).json({ message: 'Order not found' });
                 return;
             }
-            if (status === 'CANCELLED') {
-                const orderProducts = await OrderProduct.find({ orderId: id });
-                for (const orderProduct of orderProducts) {
-                    await ProductOption.findByIdAndUpdate(
-                        orderProduct.productOptionId,
-                        { $inc: { stock: orderProduct.quantity } }
-                    );
-                }
-            }
             const updatedOrder = await this.orderRepository.findById(id, {
                 populate: this.populationOptions
             });

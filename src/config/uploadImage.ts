@@ -8,7 +8,7 @@ cloudinary.v2.config({
 });
 
 interface UploadOptions {
-  file: string | Buffer;
+  file: string | Buffer | Express.Multer.File;
   folder?: string;
   publicId?: string;
   resourceType?: 'image' | 'video';
@@ -27,6 +27,7 @@ const uploadToCloudinary = async (options: UploadOptions): Promise<string> => {
       resource_type: options.resourceType || 'image',
     };
 
+    // Handle string (URL or file path)
     if (typeof options.file === 'string') {
       cloudinary.v2.uploader.upload(options.file, uploadOptions, (error, result) => {
         if (error) {
@@ -35,8 +36,21 @@ const uploadToCloudinary = async (options: UploadOptions): Promise<string> => {
         resolve(result ? result.secure_url : '');
       });
     } else {
+      // Handle Buffer or Multer file
+      let buffer: Buffer;
+      if ('buffer' in options.file && options.file.buffer) {
+        // Multer file object - buffer should already be a Buffer with memoryStorage
+        buffer = options.file.buffer as Buffer;
+      } else if (Buffer.isBuffer(options.file)) {
+        // Direct Buffer
+        buffer = options.file;
+      } else {
+        // Fallback: convert unknown type to Buffer
+        buffer = Buffer.from(options.file as unknown as ArrayLike<number>);
+      }
+
       const readableStream = new Readable();
-      readableStream.push(options.file);
+      readableStream.push(buffer);
       readableStream.push(null);
 
       cloudinary.v2.uploader.upload_stream(uploadOptions, (error, result) => {

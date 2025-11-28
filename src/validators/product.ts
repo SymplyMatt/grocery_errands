@@ -8,7 +8,7 @@ export const createProductValidator = [
   body('options').isArray({ min: 1 }).withMessage('At least one product option is required'),
   body('options.*.name').notEmpty().withMessage('Option name is required').trim(),
   body('options.*.price').isFloat({ min: 0 }).withMessage('Option price must be a positive number'),
-  body('options.*.image').optional().trim(),
+  body('options.*.image').notEmpty().withMessage('Option image is required').trim(),
   body('options.*.stock').optional().isInt({ min: 0 }).withMessage('Stock must be a non-negative integer'),
   body('categories').optional().isArray().withMessage('Categories must be an array'),
   body('categories.*').optional().isMongoId().withMessage('Invalid category ID in categories array'),
@@ -80,5 +80,15 @@ export const getRelatedProductsValidator = [
 
 export const getLocationWithProductsValidator = [
   param('locationId').isMongoId().withMessage('Invalid location ID'),
+];
+
+export const searchProductsValidator = [
+  query('q').notEmpty().withMessage('Search query is required').trim(),
+  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),
+  query('limit').optional().isInt({ min: 1, max: 100 }).withMessage('Limit must be between 1 and 100'),
+];
+
+export const getPopularSearchesValidator = [
+  query('limit').optional().isInt({ min: 1, max: 20 }).withMessage('Limit must be between 1 and 20'),
 ];
 

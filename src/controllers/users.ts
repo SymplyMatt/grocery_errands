@@ -174,6 +174,39 @@ export class UserController {
         }
     };
 
+    public updateUserPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { id } = req.params;
+            const { currentPassword, newPassword } = req.body;
+            const user = await this.userRepository.findById(id);
+            if (!user || user.deletedAt) {
+                res.status(404).json({ message: 'User not found' });
+                return;
+            }
+            const userAuth = await UserAuth.findOne({ userId: id });
+            if (!userAuth) {
+                res.status(404).json({ message: 'User authentication record not found' });
+                return;
+            }
+            const isCurrentPasswordValid = await bcrypt.compare(currentPassword, userAuth.password);
+            if (!isCurrentPasswordValid) {
+                res.status(401).json({ message: 'Current password is incorrect' });
+                return;
+            }
+            const saltRounds = 12;
+            const hashedNewPassword = await bcrypt.hash(newPassword, saltRounds);
+            await UserAuth.findOneAndUpdate(
+                { userId: id },
+                {
+                    password: hashedNewPassword
+                }
+            );
+            res.status(200).json({ message: 'User password updated successfully' });
+        } catch (err) {
+            res.status(500).json({ message: 'Error updating user password', error: err });
+        }
+    };
+
     public getUsersByLocation = async (req: Request, res: Response): Promise<void> => {
         try {
             const { locationId } = req.params;

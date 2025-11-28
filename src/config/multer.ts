@@ -1,7 +1,11 @@
 import multer from 'multer';
 import path from 'path';
 
-const storage = multer.diskStorage({});
+// Memory storage for Cloudinary uploads
+const memoryStorage = multer.memoryStorage();
+
+// Disk storage for other uploads
+const diskStorage = multer.diskStorage({});
 
 const fileFilter = (req: any, file: any, cb: any) => {
   const ext = path.extname(file.originalname).toLowerCase();
@@ -21,6 +25,11 @@ const fileFilter = (req: any, file: any, cb: any) => {
   cb(null, true);
 };
 
-const upload = multer({ storage, fileFilter });
+// Memory storage upload for Cloudinary
+const upload = multer({ storage: memoryStorage, fileFilter });
+
+// Disk storage upload for other uses
+const uploadDisk = multer({ storage: diskStorage, fileFilter });
 
 export default upload;
+export { uploadDisk };

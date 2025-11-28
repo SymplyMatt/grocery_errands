@@ -1,7 +1,7 @@
 import mongoose, { Schema, model } from 'mongoose';
 import { IOrder, OrderStatus, PaymentMethod } from '../interfaces';
 
-const orderStatusEnum: OrderStatus[] = ['PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED', 'REFUNDED'];
+const orderStatusEnum: OrderStatus[] = ['PENDING', 'DELIVERED', 'PAID'];
 const paymentMethodEnum: PaymentMethod[] = ['TOPUP', 'PAYSTACK'];
 
 const orderSchema = new Schema<IOrder>({
